@@ -120,6 +120,7 @@ export const SelfCheckOut = () => {
                                              },
                                         });*/
                                    }
+                                   barcode = null;
                                    setIsProcessingCheckout(false);
                               });
                          }
