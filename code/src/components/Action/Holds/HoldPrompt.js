@@ -70,7 +70,7 @@ export const HoldPrompt = (props) => {
      const { status, data, error, isFetching } = useQuery({
           queryKey: ['copies', id, variationId, language, library.baseUrl],
           queryFn: () => getCopies(id, language, variationId, library.baseUrl),
-          enabled: holdTypeForFormat === 'item' || holdTypeForFormat === 'either',
+          enabled: (holdTypeForFormat === 'item' || holdTypeForFormat === 'either') && _.isEmpty(volumeId) ,
      });
 
      let isPlacingHold = false;
@@ -116,9 +116,11 @@ export const HoldPrompt = (props) => {
      const [volume, setVolume] = React.useState('');
 
      if (!_.isEmpty(volumeId)){
+          logDebugMessage("Placing a hold on a single volume");
           typeOfHold = 'volume';
           promptForHoldType = false;
      }else if (volumeInfo.numItemsWithVolumes >= 1) {
+          logDebugMessage("Placing with numItemsWithVolumes >= 1");
           typeOfHold = 'item';
           promptForHoldType = true;
           if (volumeInfo.majorityOfItemsHaveVolumes) {
@@ -133,6 +135,7 @@ export const HoldPrompt = (props) => {
                promptForHoldType = true;
                typeOfHold = 'item';
           }
+          logDebugMessage("Type of hold is " + typeOfHold);
      }
 
      const [holdType, setHoldType] = React.useState(typeOfHold);
@@ -462,7 +465,7 @@ export const HoldPrompt = (props) => {
                                         theme={theme}
                                    />
                               ) : null}
-                              {!isFetching && (holdTypeForFormat === 'either' || holdTypeForFormat === 'item') ? <SelectItemHold theme={theme} id={id} item={item} setItem={setItem} language={language} data={data} holdType={holdType} setHoldType={setHoldType} holdTypeForFormat={holdTypeForFormat} url={library.baseUrl} showModal={showModal} textColor={textColor} /> : null}
+                              {!isFetching && _.isEmpty(volumeId) && (typeOfHold === 'either' || typeOfHold === 'item') ? <SelectItemHold theme={theme} id={id} item={item} setItem={setItem} language={language} data={data} holdType={holdType} setHoldType={setHoldType} holdTypeForFormat={holdTypeForFormat} url={library.baseUrl} showModal={showModal} textColor={textColor} /> : null}
                               {promptForHoldType || (holdType === 'volume' && _.isEmpty(volumeId)) ? <SelectVolume theme={theme} id={id} language={language} volume={volume} setVolume={setVolume} promptForHoldType={promptForHoldType} holdType={holdType} setHoldType={setHoldType} showModal={showModal} url={library.baseUrl} textColor={textColor} /> : null}
                               {_.isArray(locations) && _.size(locations) > 1 && !isEContent ? (
                                    <FormControl mt="$1">
@@ -578,7 +581,7 @@ export const HoldPrompt = (props) => {
                                              isDisabled={loading}
                                              onPress={async () => {
                                                   setLoading(true);
-                                                  await completeAction(id, action, activeAccount, '', '', location, sublocation, rememberPickupLocation, library.baseUrl, volumeId, holdType, holdNotificationPreferences, item).then(async (result) => {
+                                                  await completeAction(id, action, activeAccount, '', '', location, sublocation, rememberPickupLocation, library.baseUrl, (volumeId ?? volume), holdType, holdNotificationPreferences, item).then(async (result) => {
                                                        setResponse(result);
                                                        logDebugMessage("Completed Action Hold Prompt Alternate Library Card");
 
