@@ -42,6 +42,7 @@ export const GetLoginForm = (props) => {
      const navigation = useNavigation();
      const barcode = useRoute().params?.barcode ?? null;
      const [loading, setLoading] = React.useState(false);
+     const [loadingDefaultUsername, setLoadingDefaultUsername] = React.useState(false);
 
      const [pinValidationRules, setPinValidationRules] = React.useState([]);
      const [expiredPin, setExpiredPin] = React.useState(false);
@@ -52,7 +53,7 @@ export const GetLoginForm = (props) => {
      const [loginErrorMessage, setLoginErrorMessage] = React.useState('');
 
      // securely set and store key:value pairs
-     const [valueUser, setUsername] = React.useState('');
+     const [username, setUsername] = React.useState('');
      const [valueSecret, setPassword] = React.useState('');
 
      // show:hide data from password field
@@ -69,14 +70,23 @@ export const GetLoginForm = (props) => {
      const { usernameLabel, passwordLabel, allowBarcodeScanner, allowCode39 } = props;
 
      React.useEffect(() => {
-          const unsubscribe = navigation.addListener('focus', () => {
-               if (barcode) {
-                    setUsername(barcode);
-               }
-          });
+          const loadDefaultUsername = async () => {
+               try {
 
-          return unsubscribe;
-     }, [navigation, barcode]);
+                    const defaultUsername = await SecureStore.getItemAsync('defaultUsername');
+                    if (defaultUsername !== null) {
+                         setUsername(defaultUsername); // Set the retrieved username
+                         //logDebugMessage("Default username is: " + defaultUsername);
+                    }
+               } catch (error) {
+                    logWarnMessage("Error loading saved username:", error);
+               } finally {
+                    setLoadingDefaultUsername(false); // Stop loading regardless of success/failure
+               }
+          };
+
+          loadDefaultUsername();
+     }, []);
 
      const initialValidation = async () => {
           setLoginError(false);
@@ -123,7 +133,7 @@ export const GetLoginForm = (props) => {
                }
 
                setPinValidationRules(result.library.pinValidationRules);
-               const validatedUser = await loginToLiDA(valueUser, valueSecret, patronsLibrary['baseUrl']);
+               const validatedUser = await loginToLiDA(username, valueSecret, patronsLibrary['baseUrl']);
                if (validatedUser) {
                     logDebugMessage("Successfully logged in");
                     GLOBALS.appSessionId = validatedUser.session ?? '';
@@ -168,7 +178,7 @@ export const GetLoginForm = (props) => {
      };
 
      const setAsyncStorage = async () => {
-          await SecureStore.setItemAsync('userKey', valueUser);
+          await SecureStore.setItemAsync('userKey', username);
           await SecureStore.setItemAsync('secretKey', valueSecret);
           await AsyncStorage.setItem('@lastStoredVersion', Constants.expoConfig.version);
           const autoPickUserHomeLocation = parseInt(LIBRARY.appSettings?.autoPickUserHomeLocation ?? 0);
@@ -205,7 +215,7 @@ export const GetLoginForm = (props) => {
      };
 
      if (expiredPin) {
-          return <ResetExpiredPin username={valueUser} userId={userId} resetToken={resetToken} url={patronsLibrary['baseUrl']} pinValidationRules={pinValidationRules} setExpiredPin={setExpiredPin} patronsLibrary={patronsLibrary} />;
+          return <ResetExpiredPin username={username} userId={userId} resetToken={resetToken} url={patronsLibrary['baseUrl']} pinValidationRules={pinValidationRules} setExpiredPin={setExpiredPin} patronsLibrary={patronsLibrary} />;
      }
 
      return (
@@ -217,20 +227,21 @@ export const GetLoginForm = (props) => {
                     </FormControlLabel>
                     <Input>
                          <InputField autoCapitalize="none"
-                                       size="xl"
-                                       autoCorrect={false}
-                                       variant="filled"
-                                       id="barcode"
-                                       value={valueUser}
-                                       onChangeText={(text) => setUsername(text)}
-                                       returnKeyType="next"
-                                       textContentType="username"
-                                       required
-                                       onSubmitEditing={() => {
-                                            passwordRef.current.focus();
-                                       }}
-                                       blurOnSubmit={false}
-                                     color={textColor}
+                              size="$xl"
+                              autoCorrect={false}
+                              variant="filled"
+                              id="barcode"
+                              value={username}
+                              default={username}
+                              onChangeText={(text) => {SecureStore.setItemAsync('defaultUsername', text); setUsername(text);}}
+                              returnKeyType="next"
+                              textContentType="username"
+                              required
+                              onSubmitEditing={() => {
+                                   passwordRef.current.focus();
+                              }}
+                              blurOnSubmit={false}
+                              color={textColor}
                          />
                          {allowBarcodeScanner ?
                               <InputSlot onPress={() => openScanner()}>
@@ -244,18 +255,18 @@ export const GetLoginForm = (props) => {
                     </FormControlLabel>
                     <Input>
                          <InputField variant="filled"
-                                     size="xl"
-                                     type={showPassword ? 'text' : 'password'}
-                                     returnKeyType="go"
-                                     textContentType="password"
-                                     ref={passwordRef}
-                                     onChangeText={(text) => setPassword(text)}
-                                     onSubmitEditing={async () => {
-                                          setLoading(true);
-                                          await initialValidation();
-                                     }}
-                                     required
-                                     color={textColor}
+                              size="$xl"
+                              type={showPassword ? 'text' : 'password'}
+                              returnKeyType="go"
+                              textContentType="password"
+                              ref={passwordRef}
+                              onChangeText={(text) => setPassword(text)}
+                              onSubmitEditing={async () => {
+                                   setLoading(true);
+                                   await initialValidation();
+                              }}
+                              required
+                              color={textColor}
                          />
                          <InputSlot onPress={toggleShowPassword}>
                               <InputIcon as={Ionicons} name={showPassword ? 'eye-outline' : 'eye-off-outline'} mr="$2" color={textColor} />
