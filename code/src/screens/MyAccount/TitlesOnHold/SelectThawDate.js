@@ -55,9 +55,9 @@ export const SelectThawDate = (props) => {
           <>
                <ActionsheetItem onPress={showDatePicker}>
                     {data ? null : <ActionsheetIcon>
-                         <Icon as={MaterialIcons} name="pause" mr="$1" size="md" />
+                         <Icon as={MaterialIcons} name="pause" mr="$1" size="md"  color={textColor}/>
                     </ActionsheetIcon> }
-                    <ActionsheetItemText>{actionLabel}</ActionsheetItemText>
+                    <ActionsheetItemText color={textColor}>{actionLabel}</ActionsheetItemText>
                </ActionsheetItem>
                <DateTimePickerModal isVisible={isDatePickerVisible} date={date} mode="date" onConfirm={onSelectDate} onCancel={hideDatePicker} isDarkModeEnabled={colorMode} minimumDate={today} textColor={textColor} confirmTextIOS={loading ? freezingLabel : actionLabel} />
           </>
