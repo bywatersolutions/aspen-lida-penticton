@@ -98,7 +98,7 @@ export const EventScreen = () => {
      return (
           <ScrollView>
                {status === 'loading' || isFetching ? (
-                    <Box pt={50}>{LoadingSpinner('Fetching data...')}</Box>
+                    <Box pt={50}><LoadingSpinner message="Fetching data..." /></Box>
                ) : status === 'error' ? (
                     <Box pt={50}>{loadError(error, '')}</Box>
                ) : (
@@ -228,10 +228,10 @@ const getDescription = (description) => {
      if (description) {
           return (
                <Box mt={5}>
-                    <Text fontSize={{ base: 'lg', lg: '2xl' }} bold alignText="center" color={textColor}>
+                    <Text size="lg" fontWeight="$bold" textAlign="center" color={textColor}>
                          {getTermFromDictionary(language, 'about')}
                     </Text>
-                    <Text fontSize={{ base: 'md', lg: 'lg' }} lineHeight={{ base: '22px', lg: '26px' }} color={textColor}>
+                    <Text size="md" color={textColor}>
                          {decodeHTML(description)}
                     </Text>
                </Box>
@@ -247,7 +247,7 @@ const getAudiences = (audiences) => {
      if (audiences) {
           return (
                <Box>
-                    <Text fontSize={{ base: 'lg', lg: '2xl' }} bold alignText="center" color={textColor}>
+                    <Text size="lg" fontWeight="$bold" textAlign="center" color={textColor}>
                          {getTermFromDictionary(language, 'audiences')}
                     </Text>
                     {_.map(audiences, function (item, index, array) {
@@ -266,7 +266,7 @@ const getCategories = (categories) => {
      if (categories) {
           return (
                <Box>
-                    <Text fontSize={{ base: 'lg', lg: '2xl' }} bold alignText="center" color={textColor}>
+                    <Text size="lg" fontWeight="$bold" textAlign="center" color={textColor}>
                          {getTermFromDictionary(language, 'categories')}
                     </Text>
                     {_.map(categories, function (item, index, array) {
@@ -285,7 +285,7 @@ const getProgramTypes = (programTypes) => {
      if (programTypes) {
           return (
                <Box>
-                    <Text fontSize={{ base: 'lg', lg: '2xl' }} bold alignText="center" color={textColor}>
+                    <Text size="lg" fontWeight="$bold" textAlign="center" color={textColor}>
                          {getTermFromDictionary(language, 'program_types')}
                     </Text>
                     {_.map(programTypes, function (item, index, array) {
@@ -410,7 +410,7 @@ const getAddToCalendar = (start, end, location, event) => {
                                                        <HStack flexShrink={1} space="sm" alignItems="center" justifyContent="space-between">
                                                             <HStack flexShrink={1} space="sm">
                                                                  <AlertIcon />
-                                                                 <Text bold fontSize="md" color={textColor}>
+                                                                 <Text size="md" fontWeight="$bold" color={textColor}>
                                                                       {getTermFromDictionary(language, 'added_successfully')}
                                                                  </Text>
                                                             </HStack>
@@ -436,7 +436,7 @@ const getAddToCalendar = (start, end, location, event) => {
                <Pressable py="3" onPress={() => handleAddToCalendar()}>
                     <HStack space="1" alignItems="center" justifyContent="space-between">
                          <HStack space="3" alignItems="center">
-                              <Icon as={MaterialIcons} name="calendar-today" size="5" />
+                              <Icon as={MaterialIcons} name="calendar-today" size="md" />
                               <VStack>
                                    <Text bold>{displayDay}</Text>
                                    <Text>
@@ -444,7 +444,7 @@ const getAddToCalendar = (start, end, location, event) => {
                                    </Text>
                               </VStack>
                          </HStack>
-                         <Icon as={MaterialIcons} name="chevron-right" size="7" />
+                         <Icon as={MaterialIcons} name="chevron-right" size="xl" />
                     </HStack>
                </Pressable>
                <Modal isOpen={showModal} onClose={() => setShowModal(false)} closeOnOverlayClick={false} size="md">

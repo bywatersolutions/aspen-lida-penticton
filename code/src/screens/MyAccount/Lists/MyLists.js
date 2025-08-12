@@ -3,7 +3,7 @@ import { useQueries, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Image } from 'expo-image';
 import _ from 'lodash';
 import moment from 'moment';
-import { Badge, Box, Center, FlatList, HStack, Pressable, Text, VStack } from 'native-base';
+import { Badge, Box, Center, FlatList, HStack, Pressable, Text, VStack } from '@gluestack-ui/themed';
 import React from 'react';
 import { SafeAreaView } from 'react-native';
 
@@ -92,7 +92,7 @@ export const MyLists = () => {
      const listEmptyComponent = () => {
           return (
                <Center mt={5} mb={5}>
-                    <Text bold fontSize="lg">
+                    <Text bold fontSize="$lg">
                          {getTermFromDictionary(language, 'no_lists_yet')}
                     </Text>
                </Center>
@@ -139,18 +139,18 @@ export const MyLists = () => {
                               </VStack>
                               <VStack space={1} justifyContent="space-between" maxW="80%">
                                    <Box>
-                                        <Text bold fontSize="md">
+                                        <Text bold fontSize="$md">
                                              {item.title}
                                         </Text>
                                         {item.description ? (
-                                             <Text fontSize="xs" mb={2}>
+                                             <Text fontSize="$xs" mb={2}>
                                                   {item.description}
                                              </Text>
                                         ) : null}
-                                        <Text fontSize="9px" italic>
+                                        <Text fontSize="$xs" italic>
                                              {listLastUpdatedOn}
                                         </Text>
-                                        <Text fontSize="9px" italic>
+                                        <Text fontSize="$xs" italic>
                                              {numListItems}
                                         </Text>
                                    </Box>

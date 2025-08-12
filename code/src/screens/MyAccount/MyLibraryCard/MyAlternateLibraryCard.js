@@ -43,15 +43,6 @@ export const MyAlternateLibraryCard = () => {
           }
      };
 
-     React.useLayoutEffect(() => {
-          navigation.setOptions({
-               headerLeft: () => (
-                    <Pressable onPress={handleGoBack} mr={3} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
-                         <ChevronLeftIcon size="md" ml={1} color={theme['colors']['primary']['baseContrast']} />
-                    </Pressable>
-               ),
-          });
-     }, [navigation]);
      let cardLabel = getTermFromDictionary(language, 'alternate_library_card');
      let passwordLabel = getTermFromDictionary(language, 'password');
      let formMessage = '';

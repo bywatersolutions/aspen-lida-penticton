@@ -82,7 +82,7 @@ export const MyLinkedAccounts = () => {
 
      if (!canUserLinkAccounts) {
           return (
-               <ScrollView p="$5" flex="$1">
+               <ScrollView p="$5" flex={1}>
                     {showSystemMessage()}
                     {ptypeDisabledLinking ? (
                          <DisplayMessage type="info" message={getTermFromDictionary(language, 'linked_account_disabled_by_ptype')} />
@@ -97,12 +97,12 @@ export const MyLinkedAccounts = () => {
      }
 
      return (
-          <ScrollView p="$2" flex="$1">
+          <ScrollView p="$2" flex={1}>
                {showSystemMessage()}
                <DisplayMessage type="info" message={getTermFromDictionary(language, 'linked_info_message')} />
                {user.addLinkedAccountRule !== 1 ? (
                     <Box>
-                         <Heading fontSize="$lg" pb="$2" color={textColor}>
+                         <Heading size="lg" pb="$2" color={textColor}>
                               {getTermFromDictionary(language, 'linked_additional_accounts')}
                          </Heading>
                          <Text fontSize="$sm" color={textColor}>{getTermFromDictionary(language, 'linked_following_accounts_can_manage')}</Text>
@@ -114,7 +114,7 @@ export const MyLinkedAccounts = () => {
 
                {user.addLinkedAccountRule !== 2 ? (
                     <Box>
-                         <Heading fontSize="$lg" pb="$2" color={textColor}>
+                         <Heading size="lg" pb="$2" color={textColor}>
                               {getTermFromDictionary(language, 'linked_other_accounts')}
                          </Heading>
                          <Text fontSize="$sm" color={textColor}>{getTermFromDictionary(language, 'linked_following_accounts_can_view')}</Text>

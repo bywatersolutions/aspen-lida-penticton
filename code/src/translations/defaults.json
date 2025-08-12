@@ -614,5 +614,7 @@
   "bypass_pickup_location_prompt": "Bypass pickup location prompt when placing holds",
   "always_use_pickup_location": "Always use this pickup location",
   "already_on_hold": "This title is already on hold for you. Are you sure you want to place a duplicate hold?",
-  "submit": "Submit"
+  "submit": "Submit",
+  "forgot_barcode_error_message": "An unknown error occurred. Please contact the library for assistance.",
+  "forgot_barcode_success_message": "Your request completed successfully. Please contact the library if you do not receive a message soon."
 }

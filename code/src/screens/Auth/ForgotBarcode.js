@@ -8,6 +8,7 @@ import {
      FormControl,
      FormControlLabel,
      FormControlLabelText,
+     Heading,
      Input,
      InputField,
      Modal,
@@ -118,7 +119,7 @@ export const ForgotBarcode = (props) => {
                <Button variant="link" onPress={() => setShowForgotBarcodeModal(true)}>
                     <ButtonText color={theme['colors']['primary']['500']}>{buttonLabel}</ButtonText>
                </Button>
-               <Modal isOpen={showForgotBarcodeModal} size="md" avoidKeyboard onClose={() => setShowForgotBarcodeModal(false)} pb={Platform.OS === 'android' && isKeyboardOpen ? '50%' : '0'}>
+               <Modal isOpen={showForgotBarcodeModal} size="lg" avoidKeyboard onClose={() => setShowForgotBarcodeModal(false)} pb={Platform.OS === 'android' && isKeyboardOpen ? '50%' : '0'}>
                     <ModalBackdrop />
                     <ModalContent bgColor={colorMode === 'light' ? theme['colors']['warmGray']['50'] : theme['colors']['coolGray']['700']}>
                          <ModalHeader>
@@ -129,14 +130,9 @@ export const ForgotBarcode = (props) => {
                          </ModalHeader>
                          <ModalBody>
                               {showResults && !results.success ? (
-                                   <>
-                                        <Text color={textColor}>{stripHTML(results.message)}</Text>
-                                        <Button bgColor={theme['colors']['primary']['500']} onPress={resetWindow}>
-                                             <ButtonText color={theme['colors']['primary']['500-text']}>{getTermFromDictionary('en', 'try_again')}</ButtonText>
-                                        </Button>
-                                   </>
+                                   <Text color={textColor}>{stripHTML(results.message || getTermFromDictionary('en', 'forgot_barcode_error_message'))}</Text>
                               ) : showResults ? (
-                                   <Text color={textColor}>{stripHTML(results.message)}</Text>
+                                   <Text color={textColor}>{stripHTML(results.message || getTermFromDictionary('en', 'forgot_barcode_success_message'))}</Text>
                               ) : (
                                    <>
                                         <Text color={textColor}>{modalBody}</Text>
@@ -150,20 +146,21 @@ export const ForgotBarcode = (props) => {
                               )}
                          </ModalBody>
                          <ModalFooter>
-                              <ButtonGroup space="$2">
-                                   {showResults ? (
+                              <ButtonGroup space="$4">
+                                   {showResults && !results.success ? (
+                                        <Button bgColor={theme['colors']['primary']['500']} onPress={resetWindow}>
+                                             <ButtonText color={theme['colors']['primary']['500-text']}>{getTermFromDictionary('en', 'try_again')}</ButtonText>
+                                        </Button>
+                                   ) : showResults ? (
                                         <Button variant="link" onPress={closeWindow}>
                                              <ButtonText color={textColor}>{getTermFromDictionary('en', 'button_ok')}</ButtonText>
                                         </Button>
                                    ) : (
                                         <>
-                                             <Button variant="link" onPress={closeWindow}>
+                                             <Button variant="link" mr="$4" onPress={closeWindow}>
                                                   <ButtonText color={textColor}>{getTermFromDictionary('en', 'cancel')}</ButtonText>
                                              </Button>
                                              <Button
-                                                  style={{
-                                                       flexShrink: 1,
-                                                  }}
                                                   isLoading={isProcessing}
                                                   isLoadingText={getTermFromDictionary('en', 'button_processing', true)}
                                                   bgColor={theme['colors']['primary']['500']}

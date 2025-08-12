@@ -3,7 +3,7 @@ import { ChevronRightIcon, HStack, Pressable, Text, VStack } from "native-base";
 import React, { Component } from "react";
 
 // custom components and helper files
-import { loadingSpinner } from "../../components/loadingSpinner";
+import { LoadingSpinner } from "../../components/loadingSpinner";
 import { userContext } from "../../context/user";
 
 export default class FacetCluster extends Component {
@@ -63,7 +63,7 @@ export default class FacetCluster extends Component {
     const cluster = this.props.options;
 
     if (this.state.isLoading) {
-      return loadingSpinner();
+      return <LoadingSpinner />;
     }
 
     return (

@@ -1,4 +1,4 @@
-import { Badge, Box, Center, FlatList, Pressable, Text, HStack, VStack } from 'native-base';
+import { Badge, Box, Center, FlatList, Pressable, Text, HStack, VStack } from '@gluestack-ui/themed';
 import React from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native';
@@ -46,7 +46,7 @@ export const MySavedSearches = () => {
      const Empty = () => {
           return (
                <Center mt={5} mb={5}>
-                    <Text bold fontSize="lg">
+                    <Text bold fontSize="$lg">
                          {getTermFromDictionary(language, 'saved_searches_empty')}
                     </Text>
                </Center>
@@ -106,7 +106,7 @@ const Item = (data) => {
                     <VStack space={1}>{/*<Image source={{uri: item.cover}} alt={item.title} size="lg" resizeMode="contain" />*/}</VStack>
                     <VStack space={1} justifyContent="space-between" maxW="80%">
                          <Box>
-                              <Text bold fontSize="md">
+                              <Text bold fontSize="$md">
                                    {item.title}{' '}
                                    {hasNewResults === 1 ? (
                                         <Badge mb="-0.5" colorScheme="warning">
@@ -114,7 +114,7 @@ const Item = (data) => {
                                         </Badge>
                                    ) : null}
                               </Text>
-                              <Text fontSize="9px" italic>
+                              <Text fontSize="$xs" italic>
                                    Created on {item.created}
                               </Text>
                          </Box>

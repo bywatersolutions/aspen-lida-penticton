@@ -39,7 +39,7 @@ const LibraryCardStackNavigator = () => {
                     options={{
                          header: () => {
                               const title = getTermFromDictionary(language, 'alternate_library_card');
-                              return <TitleWithLogo title={title} hideBack={true} />;
+                              return <TitleWithLogo title={title} hideBack={false} />;
                          },
                          //title: getTermFromDictionary(language, 'alternate_library_card'),
                     }}

@@ -36,7 +36,7 @@ export function loadError(error, reloadAction = '') {
                          <ButtonText color={theme['colors']['primary']['500-text']}>{getTermFromDictionary('en', 'button_reload')}</ButtonText>
                     </Button>
                ) : null}
-               <Text fontSize="xs" w="75%" mt="$5" color={theme['colors']['muted']['500']} textAlign="center">
+               <Text size="xs" w="75%" mt="$5" color={theme['colors']['muted']['500']} textAlign="center">
                     ERROR: {error}
                </Text>
           </Center>

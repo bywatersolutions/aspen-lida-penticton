@@ -1,12 +1,13 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { ChevronLeftIcon, CloseIcon, Pressable, Icon } from 'native-base';
+import { Pressable, Icon } from '@gluestack-ui/themed';
+import { MaterialIcons } from '@expo/vector-icons';
 import React from 'react';
 
 import { LanguageContext, UserContext } from '../../context/initialContext';
 import { getTermFromDictionary } from '../../translations/TranslationService';
 import { StartCheckOutSession } from '../../screens/SCO/StartCheckOutSession';
 import { SelfCheckOut } from '../../screens/SCO/SelfCheckOut';
-import { FinishCheckOutSession } from '../../screens/SCO/FinishSelfCheckoutSession';
+{/*import { FinishCheckOutSession } from '../../screens/SCO/FinishSelfCheckoutSession';*/}
 import _ from 'lodash';
 import SelfCheckScanner from '../../screens/SCO/SelfCheckScanner';
 
@@ -64,12 +65,13 @@ const SelfCheckOutStackNavigator = () => {
                               return <></>;
                          },
                          headerRight: () => (
-                              <Pressable onPress={() => navigation.goBack()} mr={3} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
-                                   <CloseIcon color="primary.baseContrast" size={5} />
+                              <Pressable onPress={() => navigation.goBack()} mr="$3" hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
+                                   <Icon as={MaterialIcons} name="close" size="md" />
                               </Pressable>
                          ),
                     })}
                />
+               {/*
                <Stack.Screen
                     name="FinishCheckOutSession"
                     component={FinishCheckOutSession}
@@ -81,6 +83,7 @@ const SelfCheckOutStackNavigator = () => {
                          //title: getTermFromDictionary(language, 'finish_checkout_session')
                     }}
                />
+               */}
           </Stack.Navigator>
      );
 };

@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {SafeAreaView} from 'react-native';
-import {Button, Center, Modal, HStack, Text, Icon, FlatList, Heading} from 'native-base';
+import {Button, ButtonText, Center, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, HStack, Text, Icon, FlatList, Heading} from '@gluestack-ui/themed';
 import {MaterialIcons} from '@expo/vector-icons';
 import {getItemDetails} from '../../util/recordActions';
 import _ from 'lodash';
@@ -136,13 +136,13 @@ const renderHeader = () => {
     const {language} = React.useContext(LanguageContext);
      return (
          <HStack space={4} justifyContent="space-between" pb={2}>
-              <Text bold w="30%" fontSize="xs">
+              <Text bold w="30%" fontSize="$xs">
                   {getTermFromDictionary(language, 'available_copies')}
               </Text>
-              <Text bold w="30%" fontSize="xs">
+              <Text bold w="30%" fontSize="$xs">
                   {getTermFromDictionary(language, 'location')}
               </Text>
-              <Text bold w="30%" fontSize="xs">
+              <Text bold w="30%" fontSize="$xs">
                   {getTermFromDictionary(language, 'call_num')}
               </Text>
          </HStack>
@@ -153,13 +153,13 @@ const renderCopyDetails = (item) => {
      //console.log(item);
      return (
          <HStack space={4} justifyContent="space-between">
-              <Text w="30%" fontSize="xs">
+              <Text w="30%" fontSize="$xs">
                    {item.availableCopies} of {item.totalCopies}
               </Text>
-              <Text w="30%" fontSize="xs">
+              <Text w="30%" fontSize="$xs">
                    {item.shelfLocation}
               </Text>
-              <Text w="30%" fontSize="xs">
+              <Text w="30%" fontSize="$xs">
                    {item.callNumber}
               </Text>
          </HStack>

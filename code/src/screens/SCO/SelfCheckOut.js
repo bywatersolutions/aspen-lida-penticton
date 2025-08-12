@@ -42,7 +42,7 @@ export const SelfCheckOut = () => {
      const { library } = React.useContext(LibrarySystemContext);
      const { location } = React.useContext(LibraryBranchContext);
      const { language } = React.useContext(LanguageContext);
-     const { user, cards, updateUser } = React.useContext(UserContext);
+     const { user, cards, accounts, updateUser } = React.useContext(UserContext);
      const { checkouts, updateCheckouts } = React.useContext(CheckoutsContext);
      const passedItems = useRoute().params?.items ?? [];
      const [items, setItems] = React.useState(passedItems);
@@ -61,6 +61,7 @@ export const SelfCheckOut = () => {
           keyboardType = selfCheckSettings.barcodeEntryKeyboardType;
      }
      const [showModal, setShowModal] = useState(false);
+     const [showFinishModal, setShowFinishModal] = useState(false);
      const toggle = () => {
           barcode = null;
           setNewBarcode(null);
@@ -164,17 +165,36 @@ export const SelfCheckOut = () => {
 
      const finishSession = () => {
           barcode = null;
-          navigateStack('SelfCheckTab', 'FinishCheckOutSession');
+          setShowFinishModal(true);
+     };
+
+     const startNewSession = () => {
+          setShowFinishModal(false);
+          if (_.size(accounts) >= 1) {
+               navigation.replace('StartCheckOutSession', {
+                    startNew: true,
+               });
+          } else {
+               navigation.replace('SelfCheckOut', {
+                    startNew: true,
+                    barcode: null,
+               });
+          }
+     };
+
+     const goToCheckouts = () => {
+          setShowFinishModal(false);
+          navigateStack('AccountScreenTab', 'MyCheckouts');
      };
 
      const currentCheckoutHeader = () => {
           if (_.size(items) >= 1) {
                return (
                     <HStack space="md" justifyContent="space-between" pb="$2">
-                         <Text bold fontSize="xs" w="70%" color={textColor}>
+                         <Text bold fontSize="$xs" w="70%" color={textColor}>
                               {getTermFromDictionary(language, 'title')}
                          </Text>
-                         <Text bold fontSize="xs" w="25%" color={textColor}>
+                         <Text bold fontSize="$xs" w="25%" color={textColor}>
                               {getTermFromDictionary(language, 'checkout_due')}
                          </Text>
                     </HStack>
@@ -190,10 +210,10 @@ export const SelfCheckOut = () => {
                let dueDate = item?.due ?? '';
                return (
                     <HStack space="md" justifyContent="space-between">
-                         <Text fontSize="xs" w="70%" color={textColor}>
+                         <Text fontSize="$xs" w="70%" color={textColor}>
                               <Text bold color={textColor}>{title}</Text> ({barcode})
                          </Text>
-                         <Text fontSize="xs" w="25%" color={textColor}>
+                         <Text fontSize="$xs" w="25%" color={textColor}>
                               {dueDate}
                          </Text>
                     </HStack>
@@ -280,7 +300,7 @@ export const SelfCheckOut = () => {
                         </Center>
                     )}
                </Center>
-               <Heading fontSize="md" pb="$2" color={textColor}>
+               <Heading size="md" pb="$2" color={textColor}>
                     {getTermFromDictionary(language, 'checked_out_during_session')}
                </Heading>
                {isProcessingCheckout ? (
@@ -307,6 +327,32 @@ export const SelfCheckOut = () => {
                                              <ButtonText color={theme['colors']['primary']['500']}>{getTermFromDictionary(language, 'button_ok')}</ButtonText>
                                         </Button>
                                    </ButtonGroup>
+                              </AlertDialogFooter>
+                         </AlertDialogContent>
+                    </AlertDialog>
+               </Center>
+               <Center>
+                    <AlertDialog leastDestructiveRef={cancelRef} isOpen={showFinishModal} onClose={() => startNewSession()} size="lg">
+                         <AlertDialogBackdrop />
+                         <AlertDialogContent bgColor={colorMode === 'light' ? theme['colors']['warmGray']['50'] : theme['colors']['coolGray']['700']}>
+                              <AlertDialogHeader>
+                                   <Heading color={textColor}>{getTermFromDictionary(language, 'finish_checkout_session')}</Heading>
+                                   <Button variant="link" onPress={() => setShowFinishModal(false)} position="absolute" right="$3" top="$1" bg="transparent">
+                                        <Icon as={CloseIcon} color={textColor}/>
+                                   </Button>
+                              </AlertDialogHeader>
+                              <AlertDialogBody>
+                                   <Text color={textColor}>{getTermFromDictionary(language, 'finish_checkout_session_body')}</Text>
+                              </AlertDialogBody>
+                              <AlertDialogFooter>
+                                   <HStack w="100%" justifyContent="center">
+                                        <Button size="sm" onPress={() => startNewSession()} bgColor={theme['colors']['primary']['500']} mr="$5">
+                                             <ButtonText color={theme['colors']['primary']['500-text']}>{getTermFromDictionary(language, 'start_new_session')}</ButtonText>
+                                        </Button>
+                                        <Button size="sm" bgColor={theme['colors']['primary']['500']} onPress={() => goToCheckouts()}>
+                                             <ButtonText color={theme['colors']['primary']['500-text']}>{getTermFromDictionary(language, 'view_checkouts')}</ButtonText>
+                                        </Button>
+                                   </HStack>
                               </AlertDialogFooter>
                          </AlertDialogContent>
                     </AlertDialog>

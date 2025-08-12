@@ -6,7 +6,7 @@ import { ScrollView } from 'react-native';
 import Stars from 'react-native-stars';
 
 // custom components and helper files
-import { loadingSpinner } from '../../../components/loadingSpinner';
+import { LoadingSpinner } from '../../../components/loadingSpinner';
 import { userContext } from '../../../context/user';
 import { addAppliedFilter, removeAppliedFilter } from '../../../util/search';
 
@@ -103,7 +103,7 @@ export default class Facet_Rating extends Component {
           const stars = this.state.stars;
 
           if (this.state.isLoading) {
-               return loadingSpinner();
+               return <LoadingSpinner />;
           }
 
           return (

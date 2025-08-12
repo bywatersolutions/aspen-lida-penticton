@@ -40,6 +40,7 @@ import { createAuthTokens, getHeaders, postData } from '../../util/apiAuth';
 import { GLOBALS } from '../../util/globals';
 import { formatDiscoveryVersion } from '../../util/loadLibrary';
 import { getAppliedFilters, getAvailableFacetsKeys, getSortList, SEARCH, setDefaultFacets } from '../../util/search';
+import { decodeHTML } from '../../util/apiAuth';
 import AddToList from './AddToList';
 
 const blurhash = 'MHPZ}tt7*0WC5S-;ayWBofj[K5RjM{ofM_';
@@ -169,7 +170,7 @@ export const SearchResults = () => {
                                    </Button>
                               </ButtonGroup>
                          </ScrollView>
-                         <Text mt="$2" fontSize={10} color={textColor}>
+                         <Text mt="$2" fontSize="$2xs" color={textColor}>
                               {paginationLabel}
                          </Text>
                     </Box>
@@ -265,9 +266,15 @@ const DisplayResult = (data) => {
      const formats = item?.itemList ?? [];
 
      function getFormat(n) {
+
+          // Skip empty or invalid formats.
+          if (!n || !n.name || n.name.trim() === '') {
+               return null;
+          }
+
           return (
                <Badge key={n.key} borderRadius="$sm" borderColor={theme['colors']['secondary']['400']} variant="outline" bg="transparent">
-                    <BadgeText textTransform="none" color={theme['colors']['secondary']['400']} sx={{ '@base': { fontSize: 10, lineHeight: 14 }, '@lg': { fontSize: 16, lineHeight: 20 } }}>
+                    <BadgeText textTransform="none" color={theme['colors']['secondary']['400']} fontSize="$xs">
                          {n.name}
                     </BadgeText>
                </Badge>
@@ -372,28 +379,28 @@ const DisplayResult = (data) => {
                               {item.canAddToList ? <AddToList source="Events" itemId={item.key} btnStyle="sm" /> : null}
                          </VStack>
                          <VStack w="65%" pt="$1">
-                              <Text color={textColor} bold sx={{ '@base': { fontSize: 14, lineHeight: 17, paddingBottom: 4 }, '@lg': { fontSize: 22, lineHeight: 25, paddingBottom: 4 } }}>
-                                   {item.title}
+                              <Text color={textColor} bold fontSize="$sm" pb="$1">
+                                   {decodeHTML(item.title)}
                               </Text>
                               {item.start_date && item.end_date ? (
                                    <>
-                                        <Text color={textColor} sx={{ '@base': { fontSize: 12, lineHeight: 15 }, '@lg': { fontSize: 18, lineHeight: 21 } }}>
+                                        <Text color={textColor} fontSize="$xs">
                                              {displayDay}
                                         </Text>
-                                        <Text color={textColor} sx={{ '@base': { fontSize: 12, lineHeight: 15 }, '@lg': { fontSize: 18, lineHeight: 21 } }}>
+                                        <Text color={textColor} fontSize="$xs">
                                              {displayStartTime} - {displayEndTime}
                                         </Text>
                                    </>
                               ) : null}
                               {locationData.name ? (
-                                   <Text color={textColor} sx={{ '@base': { fontSize: 12, lineHeight: 15 }, '@lg': { fontSize: 18, lineHeight: 21 } }}>
+                                   <Text color={textColor} fontSize="$xs">
                                         {locationData.name}
                                    </Text>
                               ) : null}
                               {registrationRequired ? (
                                    <HStack mt="$4" direction="row" space="xs" flexWrap="wrap">
                                         <Badge key={0} borderRadius="$sm" borderColor={theme['colors']['secondary']['400']} variant="outline" bg="transparent">
-                                             <BadgeText textTransform="none" color={theme['colors']['secondary']['400']} sx={{ '@base': { fontSize: 10, lineHeight: 14 }, '@lg': { fontSize: 16, lineHeight: 20 } }}>
+                                             <BadgeText textTransform="none" color={theme['colors']['secondary']['400']} fontSize="$xs">
                                                   {getTermFromDictionary(language, 'registration_required')}
                                              </BadgeText>
                                         </Badge>
@@ -443,16 +450,16 @@ const DisplayResult = (data) => {
                          <AddToList itemId={item.key} btnStyle="sm" />
                     </VStack>
                     <VStack w="65%" pt="$1">
-                         <Text color={textColor} bold sx={{ '@base': { fontSize: 14, lineHeight: 17, paddingBottom: 4 }, '@lg': { fontSize: 22, lineHeight: 25, paddingBottom: 4 } }}>
+                         <Text color={textColor} bold fontSize="$sm" pb="$1">
                               {item.title}
                          </Text>
                          {item.author ? (
-                              <Text color={textColor} sx={{ '@base': { fontSize: 12, lineHeight: 15 }, '@lg': { fontSize: 18, lineHeight: 21 } }}>
+                              <Text color={textColor} fontSize="$xs">
                                    {getTermFromDictionary(language, 'by')} {item.author}
                               </Text>
                          ) : null}
                          <HStack mt="$4" direction="row" space="xs" flexWrap="wrap">
-                              {_.map(formats, getFormat)}
+                              {_.compact(_.map(formats, getFormat))}
                          </HStack>
                     </VStack>
                </HStack>

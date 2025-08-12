@@ -1,15 +1,10 @@
 import React from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { LibrarySystemContext, ThemeContext } from '../context/initialContext';
-import { ChevronLeftIcon, CloseIcon, Pressable, Icon } from 'native-base';
-import { View, Image, StyleSheet, Text, useColorMode, HStack, VStack, Box } from '@gluestack-ui/themed';
+import { View, Image, StyleSheet, Text, useColorMode, HStack, VStack, Box, Pressable, Icon, ChevronLeftIcon } from '@gluestack-ui/themed';
 import { Platform, useWindowDimensions } from 'react-native';
-import Constants from 'expo-constants';
-
-let topPadding = Constants.statusBarHeight;
-if (Platform.OS === 'android') {
-     topPadding = 0;
-}
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { decodeHTML } from '../util/apiAuth';
 
 const HeaderLogoBar = (props) => {
      const { theme, colorMode } = React.useContext(ThemeContext);
@@ -55,20 +50,23 @@ const HeaderLogoBar = (props) => {
 
 export default function TitleWithLogo(props) {
      const { theme } = React.useContext(ThemeContext);
-
      const navigation = useNavigation();
      const hideBack = props.hideBack ?? false;
+     const insets = useSafeAreaInsets();
 
      return (
-          <VStack mt={topPadding}>
+          <VStack pt={insets.top}>
                <HeaderLogoBar />
-               <HStack safeAreaLeft={7} safeAreaRight={7} safeAreaBottom={2} safeAreaTop={2} alignItems="left" backgroundColor={theme['colors']['primary']['base']} pt={2} pb={2}>
-                    {navigation.canGoBack() && !hideBack && (
-                       <Pressable onPress={() => navigation.goBack()} mr={3} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }} >
-                            <ChevronLeftIcon size={5} left={3} color={theme['colors']['primary']['baseContrast']} />
+               <HStack px="$1" py="$2" alignItems="center" justifyContent="space-between" backgroundColor={theme['colors']['primary']['base']}>
+                    {navigation.canGoBack() && !hideBack ? (
+                       <Pressable onPress={() => navigation.goBack()} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }} pl="$1">
+                            <Icon as={ChevronLeftIcon} size="xl" color={theme['colors']['primary']['baseContrast']} />
                        </Pressable>
-                     )}
-                    <Text left={5} color={theme['colors']['primary']['baseContrast']} fontSize={18} lineHeight={22} fontWeight='bold' numberOfLines={1} ellipsizeMode="tail">{props.title}</Text>
+                    ) : (
+                       <Box width="$6" />
+                    )}
+                    <Text flex={1} textAlign="center" color={theme['colors']['primary']['baseContrast']} size="lg" lineHeight="$lg" fontWeight="bold" numberOfLines={1} ellipsizeMode="tail">{decodeHTML(props.title)}</Text>
+                    <Box width="$6" />
                </HStack>
           </VStack>
      );

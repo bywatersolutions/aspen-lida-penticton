@@ -5,7 +5,6 @@ import { useRoute } from '@react-navigation/native';
 import { useQueries, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Image } from 'expo-image';
 import _ from 'lodash';
-import {useColorModeValue, useToken} from 'native-base';
 import React from 'react';
 
 // custom components and helper files
@@ -100,14 +99,14 @@ export const GroupedWorkScreen = () => {
 };
 
 const DisplayGroupedWork = (payload) => {
-     const backgroundColor = useToken('colors', 'warmGray.200');
      const groupedWork = payload.data;
      const route = useRoute();
      const id = route.params.id;
      const { format } = React.useContext(GroupedWorkContext);
      const { library } = React.useContext(LibrarySystemContext);
      const { language } = React.useContext(LanguageContext);
-     const { textColor } = React.useContext(ThemeContext);
+     const { textColor, theme, colorMode } = React.useContext(ThemeContext);
+     const backgroundColor = colorMode === 'light' ? theme['colors']['warmGray']['200'] : theme['colors']['coolGray']['900'];
 
      const formats = Object.keys(groupedWork.formats);
      if (_.isObject(formats)) {
@@ -243,9 +242,13 @@ const getFormats = (formats) => {
                          {getTermFromDictionary(language, 'format')}:
                     </Text>
                     <ButtonGroup flexDirection="row" flexWrap="wrap">
-                         {_.map(_.keys(formats), function (item, index, array) {
-                              return <Format key={index} format={item} data={formats[item]} isSelected={format} updateFormat={updateFormat} />;
-                         })}
+                         {_.compact(_.map(_.keys(formats), function (item, index, array) {
+                              const formatData = formats[item];
+                              if (!formatData || !formatData.label || formatData.label.trim() === '' || item.trim() === '') {
+                                   return null;
+                              }
+                              return <Format key={index} format={item} data={formatData} isSelected={format} updateFormat={updateFormat} />;
+                         }))}
                     </ButtonGroup>
                </>
           );
@@ -256,11 +259,11 @@ const getFormats = (formats) => {
 
 const getBibliographicInformationLink = (groupedWorkId) => {
      const { language } = React.useContext(LanguageContext);
-     const { theme } = React.useContext(ThemeContext);
+     const { theme, colorMode } = React.useContext(ThemeContext);
      const { user } = React.useContext(UserContext);
      const { library } = React.useContext(LibrarySystemContext);
-     const backgroundColor = useToken('colors', useColorModeValue('warmGray.200', 'coolGray.900'));
-     const textColor = useToken('colors', useColorModeValue('gray.800', 'coolGray.200'));
+     const backgroundColor = colorMode === 'light' ? theme['colors']['warmGray']['200'] : theme['colors']['coolGray']['900'];
+     const textColor = colorMode === 'light' ? theme['colors']['gray']['800'] : theme['colors']['coolGray']['200'];
 
      let showMoreInfoBtn = false;
      if(library?.showMoreInfoBtn) {

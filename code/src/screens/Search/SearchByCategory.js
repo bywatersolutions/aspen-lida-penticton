@@ -77,7 +77,7 @@ export const SearchResultsForBrowseCategory = () => {
                                    </Button>
                               </ButtonGroup>
                          </ScrollView>
-                         <Text mt="$2" fontSize={10} color={textColor}>
+                         <Text mt="$2" fontSize="$2xs" color={textColor}>
                               {paginationLabel}
                          </Text>
                     </Box>

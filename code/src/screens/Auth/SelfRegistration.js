@@ -58,7 +58,7 @@ export const SelfRegistration = () => {
 						const {label, properties} = section;
 						return (
 							<Box mb="$5">
-							<Text bold fontSize="16" color={textColor}>{label}</Text>
+							<Text bold fontSize="$md" color={textColor}>{label}</Text>
 							{_.map(properties, function(field, key) {
 							const {type, description, maxLength, required, property} = field;
 							const fieldLabel = field.label;
@@ -69,7 +69,7 @@ export const SelfRegistration = () => {
 										<Input borderColor={colorMode === 'light' ? theme['colors']['coolGray']['500'] : theme['colors']['gray']['300']}><InputField type='text'
 										                   key={key}
 										                   name={property}
-										                   maxLength={parseInt(maxLength)}
+										                   maxLength={maxLength ? parseInt(maxLength) : undefined}
 										                   accessibilityLabel={description}
 										                   returnKeyType="next"
 										                   color={textColor}
@@ -93,7 +93,7 @@ export const SelfRegistration = () => {
 										<Input borderColor={colorMode === 'light' ? theme['colors']['coolGray']['500'] : theme['colors']['gray']['300']}><InputField type='password'
 										                   key={property}
 										                   name={property}
-										                   maxLength={parseInt(maxLength)}
+										                   maxLength={maxLength ? parseInt(maxLength) : undefined}
 										                   accessibilityLabel={description}
 										                   color={textColor}
 										                   onChangeText={(value) => {
@@ -116,7 +116,7 @@ export const SelfRegistration = () => {
 										<Input borderColor={colorMode === 'light' ? theme['colors']['coolGray']['500'] : theme['colors']['gray']['300']}><InputField type='email'
 										                   key={property}
 										                   name={property}
-										                   maxLength={parseInt(maxLength)}
+										                   maxLength={maxLength ? parseInt(maxLength) : undefined}
 										                   accessibilityLabel={description}
 										                   color={textColor}
 										                   onChangeText={(value) => {

@@ -32,6 +32,7 @@ export const MyLibraryCard = () => {
      //const [numCards, setNumCards] = React.useState(_.size(cards) ?? 1);
      const { library } = React.useContext(LibrarySystemContext);
      const { language } = React.useContext(LanguageContext);
+     const { theme } = React.useContext(ThemeContext);
 
      let autoRotate = library.generalSettings?.autoRotateCard ?? 0;
 
@@ -295,7 +296,7 @@ const CreateLibraryCard = (data) => {
                     <Center>
                          <HStack>
                               {icon ? <Image source={{ uri: icon }} fallbackSource={require('../../../themes/default/aspenLogo.png')} alt={getTermFromDictionary(language, 'library_card')} /> : null}
-                              <Text bold ml="$3" mt="$2" fontSize="lg">
+                              <Text bold ml="$3" mt="$2" fontSize="$lg">
                                    {card.homeLocation}
                               </Text>
                          </HStack>
@@ -304,11 +305,11 @@ const CreateLibraryCard = (data) => {
                          <Text pb="$2">
                               {card.displayName}
                          </Text>
-                         <Text bold fontSize="xl">
+                         <Text bold fontSize="$xl">
                               {barcodeValue}
                          </Text>
                          {showExpirationDate && expirationDate && !neverExpires ? (
-                              <Text fontSize="sm">
+                              <Text fontSize="$sm">
                                    {expirationText}
                               </Text>
                          ) : null}
@@ -326,23 +327,23 @@ const CreateLibraryCard = (data) => {
                          <Center>
                               <HStack>
                                    {icon ? <Image source={{ uri: icon }} fallbackSource={require('../../../themes/default/aspenLogo.png')} w={42} h={42} alt={getTermFromDictionary(language, 'library_card')} /> : null}
-                                   <Text bold ml="$3" mt="$2" fontSize="lg" color={textColor}>
+                                   <Text bold ml="$3" mt="$2" fontSize="$lg" color={textColor}>
                                         {card.homeLocation}
                                    </Text>
                               </HStack>
                          </Center>
                          <Center pt="$2">
-                              <Text fontSize="md" color={textColor}>
+                              <Text fontSize="$md" color={textColor}>
                                    {card.displayName}
                               </Text>
                          </Center>
                     </>
-               ) : null} 
+               ) : null}
                <Center>
                     {showExpirationDate && expirationDate && !neverExpires && numCards > 1 ? <Text color={textColor}>{expirationText}</Text> : null}
-                    {numCards > 1 ? <OpenBarcode barcodeValue={barcodeValue} barcodeFormat={barcodeStyle} handleBarcodeError={handleBarcodeError} language={language} /> : <><Barcode value={barcodeValue} format={barcodeStyle} background={theme['colors'['warmGray']['200']]} onError={handleBarcodeError} /><Text color={textColor} style={{fontSize: 20, textAlign: 'center'}}>{barcodeValue}</Text></>}
+                    {numCards > 1 ? <OpenBarcode barcodeValue={barcodeValue} barcodeFormat={barcodeStyle} handleBarcodeError={handleBarcodeError} language={language} /> : <><Barcode value={barcodeValue} format={barcodeStyle} background={theme['colors']['warmGray']['200']} onError={handleBarcodeError} /><Text color={textColor} fontSize="$xl" textAlign="center">{barcodeValue}</Text></>}
                     {showExpirationDate && expirationDate && !neverExpires && numCards === 1 ? (
-                         <Text color={textColor} fontSize="sm" pt="$2">
+                         <Text color={textColor} fontSize="$sm" pt="$2">
                               {expirationText}
                          </Text>
                     ) : null}

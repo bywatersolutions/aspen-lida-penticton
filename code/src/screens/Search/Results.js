@@ -7,7 +7,7 @@ import { SafeAreaView, ScrollView } from 'react-native';
 
 // custom components and helper files
 import { loadError } from '../../components/loadError';
-import { loadingSpinner } from '../../components/loadingSpinner';
+import { LoadingSpinner } from '../../components/loadingSpinner';
 import { formatDiscoveryVersion, LIBRARY } from '../../util/loadLibrary';
 import { getSearchResults, resetSearchGlobals, SEARCH, searchResults } from '../../util/search';
 import { AddToList } from './AddToList';
@@ -303,7 +303,7 @@ export default class Results extends React.Component {
                               <Image
                                    source={{ uri: item.image }}
                                    alt={item.title}
-                                   borderRadius="md"
+                                   borderRadius="$md"
                                    size={{
                                         base: '90px',
                                         lg: '120px',
@@ -411,7 +411,7 @@ export default class Results extends React.Component {
           if (!this.state.isLoadingMore) {
                return null;
           }
-          return loadingSpinner();
+          return <LoadingSpinner />;
      };
 
      filterBar = () => {
@@ -569,7 +569,7 @@ export default class Results extends React.Component {
           }
 
           if (this.state.isLoading) {
-               return loadingSpinner();
+               return <LoadingSpinner />;
           }
 
           if (this.state.hasError && !this.state.dataMessage) {

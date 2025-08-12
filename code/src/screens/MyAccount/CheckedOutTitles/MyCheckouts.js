@@ -382,7 +382,7 @@ export const MyCheckouts = () => {
                                         defaultValue={checkoutSource}
                                         accessibilityLabel={getTermFromDictionary(language, 'filter_by_source_label')}
                                         onValueChange={(itemValue) => toggleCheckoutSource(itemValue)}>
-                                        <SelectTrigger variant="outline" size="sm" borderWidth={colorMode === 'light' ? '$none' : '$1'}
+                                        <SelectTrigger variant="outline" size="sm" borderWidth={colorMode === 'light' ? 0 : 1}
                                                        borderColor={colorMode === 'light' ? '$none' : theme['colors']['gray']['400']}>
                                              <SelectInput color={textColor} value={checkoutSourceSelectLabel()} />
                                              <SelectIcon mr="$3">
@@ -415,7 +415,7 @@ export const MyCheckouts = () => {
                                         defaultValue={userCheckoutSortMethod}
                                         accessibilityLabel={getTermFromDictionary(language, 'select_sort_method')}
                                         onValueChange={(itemValue) => toggleSort(itemValue)}>
-                                        <SelectTrigger variant="outline" size="sm" borderWidth={colorMode === 'light' ? '$none' : '$1'}
+                                        <SelectTrigger variant="outline" size="sm" borderWidth={colorMode === 'light' ? 0 : 1}
                                                        borderColor={colorMode === 'light' ? '$none' : theme['colors']['gray']['400']}>
                                              <SelectInput color={textColor} value={checkoutSortLabel()} />
                                              <SelectIcon mr="$3">
@@ -478,7 +478,7 @@ export const MyCheckouts = () => {
 
      return (
           <SafeAreaView style={{ flex: 1 }}>
-               <Box p="$2" bgColor="coolGray.100" borderBottomWidth="$1" borderColor={colorMode === 'light' ? theme['colors']['coolGray']['500'] : theme['colors']['gray']['300']} flexWrap="nowrap">
+               <Box p="$2" bgColor="coolGray.100" borderBottomWidth={1} borderColor={colorMode === 'light' ? theme['colors']['coolGray']['500'] : theme['colors']['gray']['300']} flexWrap="nowrap">
                     {showSystemMessage()}
                     <ScrollView horizontal>{actionButtons()}</ScrollView>
                </Box>

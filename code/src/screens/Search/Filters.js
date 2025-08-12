@@ -3,7 +3,7 @@ import { useNavigation, useNavigationState } from '@react-navigation/native';
 import _ from 'lodash';
 import { Box, Button, Center, ChevronRightIcon, FormControl, HStack, Icon, Input, Pressable, ScrollView, Text, View, VStack } from 'native-base';
 import React from 'react';
-import { loadingSpinner } from '../../components/loadingSpinner';
+import { LoadingSpinner } from '../../components/loadingSpinner';
 
 import { LanguageContext, LibraryBranchContext, LibrarySystemContext, SearchContext, UserContext } from '../../context/initialContext';
 import { navigateStack } from '../../helpers/RootNavigator';
@@ -349,7 +349,7 @@ export const FiltersScreen = () => {
                                    </Pressable>
                               </>
                          ) : null}
-                         {!isLoading ? facets.map((item, index, array) => renderFilter(item, index)) : <Box mt={5}>{loadingSpinner()}</Box>}
+                         {!isLoading ? facets.map((item, index, array) => renderFilter(item, index)) : <Box mt={5}><LoadingSpinner /></Box>}
                     </Box>
                </ScrollView>
                {actionButtons()}

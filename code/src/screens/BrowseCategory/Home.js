@@ -481,7 +481,7 @@ const ButtonOptions = (props) => {
                               onPressSettings();
                          }}>
                          <ButtonIcon as={Settings} color={theme['colors']['primary']['500-text']} mr="$1" size="sm" />
-                         <ButtonText fontSize={10} fontWeight="$medium" sx={{ color: theme['colors']['primary']['500-text'] }}>
+                         <ButtonText fontSize="$2xs" fontWeight="$medium" sx={{ color: theme['colors']['primary']['500-text'] }}>
                               {getTermFromDictionary(language, 'browse_categories_manage')}
                          </ButtonText>
                     </Button>
@@ -493,7 +493,7 @@ const ButtonOptions = (props) => {
                               onRefreshCategories();
                          }}>
                          <ButtonIcon as={RotateCwIcon} color={theme['colors']['primary']['500-text']} mr="$1" size="sm" />
-                         <ButtonText fontSize={10} fontWeight="$medium" sx={{ color: theme['colors']['primary']['500-text'] }}>
+                         <ButtonText fontSize="$2xs" fontWeight="$medium" sx={{ color: theme['colors']['primary']['500-text'] }}>
                               {getTermFromDictionary(language, 'browse_categories_refresh')}
                          </ButtonText>
                     </Button>

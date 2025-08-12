@@ -60,7 +60,7 @@ export const DisplayGroupedWorkResult = (props) => {
           if (_.isArray(n) || _.isObject(n)) {
                return (
                     <Badge key={n.key} borderRadius="$sm" borderColor={theme['colors']['secondary']['400']} variant="outline" bg="transparent">
-                         <BadgeText textTransform="none" color={theme['colors']['secondary']['400']} sx={{ '@base': { fontSize: 10, lineHeight: 14 }, '@lg': { fontSize: 16, lineHeight: 20 } }}>
+                         <BadgeText textTransform="none" color={theme['colors']['secondary']['400']} fontSize="$xs">
                               {n.name}
                          </BadgeText>
                     </Badge>
@@ -69,7 +69,7 @@ export const DisplayGroupedWorkResult = (props) => {
 
           return (
                <Badge key={n} borderRadius="$sm" borderColor={theme['colors']['secondary']['400']} variant="outline" bg="transparent">
-                    <BadgeText textTransform="none" color={theme['colors']['secondary']['400']} sx={{ '@base': { fontSize: 10, lineHeight: 14 }, '@lg': { fontSize: 16, lineHeight: 20 } }}>
+                    <BadgeText textTransform="none" color={theme['colors']['secondary']['400']} fontSize="$xs">
                          {n}
                     </BadgeText>
                </Badge>
@@ -109,7 +109,7 @@ export const DisplayGroupedWorkResult = (props) => {
                                         sx={{
                                              bgColor: colorMode === 'light' ? theme['colors']['warmGray']['200'] : theme['colors']['coolGray']['900'],
                                         }}>
-                                        <BadgeText textTransform="none" color={colorMode === 'light' ? theme['colors']['coolGray']['600'] : theme['colors']['warmGray']['400']} sx={{ '@base': { fontSize: 10 }, '@lg': { fontSize: 16, padding: 4, textAlign: 'center' } }}>
+                                        <BadgeText textTransform="none" color={colorMode === 'light' ? theme['colors']['coolGray']['600'] : theme['colors']['warmGray']['400']} fontSize="$xs" textAlign="center">
                                              {item.language}
                                         </BadgeText>
                                    </Badge>
@@ -119,12 +119,12 @@ export const DisplayGroupedWorkResult = (props) => {
                     </VStack>
                     <VStack w="65%" pt="$1">
                          {title ? (
-                              <Text color={textColor} bold sx={{ '@base': { fontSize: 14, lineHeight: 17, paddingBottom: 4 }, '@lg': { fontSize: 22, lineHeight: 25, paddingBottom: 4 } }}>
+                              <Text color={textColor} bold fontSize="$sm" pb="$1">
                                    {title}
                               </Text>
                          ) : null}
                          {author ? (
-                              <Text color={textColor} sx={{ '@base': { fontSize: 12, lineHeight: 15 }, '@lg': { fontSize: 18, lineHeight: 21 } }}>
+                              <Text color={textColor} fontSize="$xs">
                                    {getTermFromDictionary(language, 'by')} {author}
                               </Text>
                          ) : null}

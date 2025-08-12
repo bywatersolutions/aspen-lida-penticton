@@ -5,7 +5,7 @@ import React, { Component } from 'react';
 import { ScrollView } from 'react-native';
 
 // custom components and helper files
-import { loadingSpinner } from '../../../components/loadingSpinner';
+import { LoadingSpinner } from '../../../components/loadingSpinner';
 import { userContext } from '../../../context/user';
 import { getTermFromDictionary } from '../../../translations/TranslationService';
 import { addAppliedFilter } from '../../../util/search';
@@ -84,7 +84,7 @@ export default class Facet_Year extends Component {
           const { item, category } = this.state;
 
           if (this.state.isLoading) {
-               return loadingSpinner();
+               return <LoadingSpinner />;
           }
 
           return (

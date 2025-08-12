@@ -108,13 +108,13 @@ const EditList = (props) => {
                                              setPublic(nextValue);
                                         }}>
                                         <HStack direction="row" alignItems="center" space="md" w="75%" maxW="300px">
-                                             <Radio value={false} my="$1">
+                                             <Radio value="false" my="$1">
                                                   <RadioIndicator mr="$2"  borderColor={colorMode === 'light' ? theme['colors']['coolGray']['500'] : theme['colors']['gray']['300']}>
                                                        <RadioIcon as={CircleIcon} color={colorMode === 'light' ? theme['colors']['coolGray']['500'] : theme['colors']['gray']['300']} />
                                                   </RadioIndicator>
                                                   <RadioLabel color={textColor}>{getTermFromDictionary(language, 'private')}</RadioLabel>
                                              </Radio>
-                                             <Radio value={true} my="$1">
+                                             <Radio value="true" my="$1">
                                                   <RadioIndicator mr="$2"  borderColor={colorMode === 'light' ? theme['colors']['coolGray']['500'] : theme['colors']['gray']['300']}>
                                                        <RadioIcon as={CircleIcon} color={colorMode === 'light' ? theme['colors']['coolGray']['500'] : theme['colors']['gray']['300']} />
                                                   </RadioIndicator>

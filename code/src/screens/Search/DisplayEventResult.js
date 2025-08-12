@@ -11,6 +11,7 @@ import { LanguageContext, LibrarySystemContext, ThemeContext } from '../../conte
 import { getCleanTitle } from '../../helpers/item';
 import { navigate } from '../../helpers/RootNavigator';
 import { getTermFromDictionary } from '../../translations/TranslationService';
+import { decodeHTML } from '../../util/apiAuth';
 import AddToList from './AddToList';
 
 const blurhash = 'MHPZ}tt7*0WC5S-;ayWBofj[K5RjM{ofM_';
@@ -144,7 +145,7 @@ export const DisplayEventResult = (props) => {
                     </VStack>
                     <VStack w="65%" pt="$1">
                          <Text color={textColor} bold sx={{ '@base': { fontSize: 14, lineHeight: 17, paddingBottom: 4 }, '@lg': { fontSize: 22, lineHeight: 25, paddingBottom: 4 } }}>
-                              {item.title}
+                              {decodeHTML(item.title)}
                          </Text>
                          {item.start_date && item.end_date ? (
                               <>

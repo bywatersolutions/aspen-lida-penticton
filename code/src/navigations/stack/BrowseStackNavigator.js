@@ -1,6 +1,7 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createStackNavigator } from '@react-navigation/stack';
-import { ChevronLeftIcon, CloseIcon, Pressable, Icon } from 'native-base';
+import { Pressable, Icon } from '@gluestack-ui/themed';
+import { MaterialIcons } from '@expo/vector-icons';
 import React from 'react';
 import Platform from 'react-native';
 import Scanner from '../../components/Scanner';
@@ -74,8 +75,8 @@ const BrowseStackNavigator = () => {
                               return <></>;
                          },
                          headerRight: () => (
-                              <Pressable onPress={() => navigation.goBack()} mr={3} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
-                                   <CloseIcon color="primary.baseContrast" size={5} />
+                              <Pressable onPress={() => navigation.goBack()} mr="$3" hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
+                                   <Icon as={MaterialIcons} name="close" size="md" />
                               </Pressable>
                          ),
                     })}
@@ -90,8 +91,8 @@ const BrowseStackNavigator = () => {
                               return <></>;
                          },
                          headerRight: () => (
-                              <Pressable onPress={() => navigation.goBack()} mr={3} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
-                                   <CloseIcon color="primary.baseContrast" size={5} />
+                              <Pressable onPress={() => navigation.goBack()} mr="$3" hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
+                                   <Icon as={MaterialIcons} name="close" size="md" />
                               </Pressable>
                          ),
                     })}
@@ -106,8 +107,8 @@ const BrowseStackNavigator = () => {
                               return <></>;
                          },
                          headerRight: () => (
-                              <Pressable onPress={() => navigation.goBack()} mr={3} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
-                                   <CloseIcon color="primary.baseContrast" size={5} />
+                              <Pressable onPress={() => navigation.goBack()} mr="$3" hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
+                                   <Icon as={MaterialIcons} name="close" size="md" />
                               </Pressable>
                          ),
                     })}
@@ -122,8 +123,8 @@ const BrowseStackNavigator = () => {
                               return <></>;
                          },
                          headerRight: () => (
-                              <Pressable onPress={() => navigation.goBack()} mr={3} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
-                                   <CloseIcon color="primary.baseContrast" size={5} />
+                              <Pressable onPress={() => navigation.goBack()} mr="$3" hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
+                                   <Icon as={MaterialIcons} name="close" size="md" />
                               </Pressable>
                          ),
                     })}
@@ -277,8 +278,8 @@ export const EditionsModal = () => {
                     headerLeft: () => {
                          if (route.name !== 'Editions') {
                               return (
-                                   <Pressable onPress={() => navigation.goBack()} mr={3} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
-                                        <ChevronLeftIcon size={5} color="primary.baseContrast" />
+                                   <Pressable onPress={() => navigation.goBack()} mr="$3" hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
+                                        <Icon as={MaterialIcons} name="chevron-left" size="md" />
                                    </Pressable>
                               );
                          } else {
@@ -286,8 +287,8 @@ export const EditionsModal = () => {
                          }
                     },
                     headerRight: () => (
-                         <Pressable onPress={() => navigation.getParent().pop()} mr={3} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
-                              <CloseIcon size={5} color="primary.baseContrast" />
+                         <Pressable onPress={() => navigation.getParent().pop()} mr="$3" hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
+                              <Icon as={MaterialIcons} name="close" size="md" />
                          </Pressable>
                     ),
                })}>
@@ -326,8 +327,8 @@ const FilterModal = () => {
                     headerLeft: () => {
                          if (route.name !== 'Filters') {
                               return (
-                                   <Pressable onPress={() => navigation.goBack()} mr={3} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
-                                        <ChevronLeftIcon size={5} color="primary.baseContrast" />
+                                   <Pressable onPress={() => navigation.goBack()} mr="$3" hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
+                                        <Icon as={MaterialIcons} name="chevron-left" size="md" />
                                    </Pressable>
                               );
                          } else {
@@ -335,8 +336,8 @@ const FilterModal = () => {
                          }
                     },
                     headerRight: () => (
-                         <Pressable onPress={() => navigation.getParent().pop()} mr={3} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
-                              <CloseIcon size={5} color="primary.baseContrast" />
+                         <Pressable onPress={() => navigation.getParent().pop()} mr="$3" hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
+                              <Icon as={MaterialIcons} name="close" size="md" />
                          </Pressable>
                     ),
                })}>

@@ -308,7 +308,7 @@ export const MyHolds = () => {
           } else if (userHoldPendingSortMethod === 'sortTitle') {
                pendingSortLength = 8 * sortBy.title.length + 80;
           }
-          
+
           if (section === 'pending') {
                if (showSelectOptions) {
                     return (
@@ -321,8 +321,8 @@ export const MyHolds = () => {
                                                   selectedValue={userHoldPendingSortMethod}
                                                   accessibilityLabel={getTermFromDictionary(language, 'select_sort_method')}
                                                   onValueChange={(itemValue) => togglePendingSort(itemValue)}>
-                                                  <SelectTrigger variant="outline" size="sm" borderWidth={colorMode === 'light' ? '$none' : '$1'}
-                                                                 borderColor={colorMode === 'light' ? '$none' : theme['colors']['gray']['400']}>
+                                                  <SelectTrigger variant="outline" size="sm" borderWidth={colorMode === 'light' ? '$0' : '$1'}
+                                                                 borderColor={colorMode === 'light' ? 'transparent' : theme['colors']['gray']['400']}>
                                                        <SelectInput color={textColor} value={pendingSortLabel()} />
                                                        <SelectIcon mr="$3">
                                                             <Icon color={textColor} as={ChevronDownIcon} />
@@ -367,8 +367,8 @@ export const MyHolds = () => {
                                              defaultValue={userHoldPendingSortMethod}
                                              accessibilityLabel={getTermFromDictionary(language, 'select_sort_method')}
                                              onValueChange={(itemValue) => togglePendingSort(itemValue)}>
-                                             <SelectTrigger variant="outline" size="sm" borderWidth={colorMode === 'light' ? '$none' : '$1'}
-                                                            borderColor={colorMode === 'light' ? '$none' : theme['colors']['gray']['400']}>
+                                             <SelectTrigger variant="outline" size="sm" borderWidth={colorMode === 'light' ? '$0' : '$1'}
+                                                            borderColor={colorMode === 'light' ? 'transparent' : theme['colors']['gray']['400']}>
                                                   <SelectInput color={textColor} value={pendingSortLabel()} />
                                                   <SelectIcon mr="$3">
                                                        <Icon color={textColor} as={ChevronDownIcon} />
@@ -457,8 +457,8 @@ export const MyHolds = () => {
                                              defaultValue={userHoldReadySortMethod}
                                              accessibilityLabel={getTermFromDictionary(language, 'select_sort_method')}
                                              onValueChange={(itemValue) => toggleReadySort(itemValue)}>
-                                             <SelectTrigger variant="outline" size="sm" borderWidth={colorMode === 'light' ? '$none' : '$1'}
-                                                            borderColor={colorMode === 'light' ? '$none' : theme['colors']['gray']['400']}>
+                                             <SelectTrigger variant="outline" size="sm" borderWidth={colorMode === 'light' ? '$0' : '$1'}
+                                                            borderColor={colorMode === 'light' ? 'transparent' : theme['colors']['gray']['400']}>
                                                   <SelectInput color={textColor} value={readySortLabel()} />
                                                   <SelectIcon mr="$3">
                                                        <Icon color={textColor} as={ChevronDownIcon} />
@@ -531,8 +531,8 @@ export const MyHolds = () => {
                                         initialLabel="Test"
                                         accessibilityLabel="Filter By Source"
                                         onValueChange={(itemValue) => toggleHoldSource(itemValue)}>
-                                        <SelectTrigger variant="outline" size="sm" borderWidth={colorMode === 'light' ? '$none' : '$1'}
-                                                       borderColor={colorMode === 'light' ? '$none' : theme['colors']['gray']['400']}>
+                                        <SelectTrigger variant="outline" size="sm" borderWidth={colorMode === 'light' ? '$0' : '$1'}
+                                                       borderColor={colorMode === 'light' ? 'transparent' : theme['colors']['gray']['400']}>
                                              <SelectInput color={textColor} value={holdSourceLabel()} />
                                              <SelectIcon mr="$3">
                                                   <Icon color={textColor} as={ChevronDownIcon} />

@@ -328,7 +328,7 @@ export const MyReadingHistory = () => {
                                             defaultValue={sort}
                                             accessibilityLabel={getTermFromDictionary(language, 'select_sort_method')}
                                             onValueChange={(itemValue) => updateSort(itemValue)}>
-                                             <SelectTrigger variant="outline" size="sm" borderWidth={colorMode === 'light' ? '$none' : '$1'}
+                                             <SelectTrigger variant="outline" size="sm" borderWidth={colorMode === 'light' ? 0 : 1}
                                                             borderColor={colorMode === 'light' ? '$none' : theme['colors']['gray']['400']}>
                                                   <SelectInput color={textColor} value={sortLabel()} />
                                                   <SelectIcon mr="$3">
@@ -581,7 +581,7 @@ const Item = (data) => {
                          <ActionsheetContent bgColor={colorMode === 'light' ? theme['colors']['warmGray']['50'] : theme['colors']['coolGray']['700']}>
                               <Box w="100%" h="$60" px="$4" justifyContent="center">
                                    <Text
-                                        fontSize={18}
+                                        fontSize="$lg"
                                         color={textColor}>
                                         {getTitle(item.title)}
                                    </Text>

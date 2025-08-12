@@ -5,7 +5,7 @@ import React, { Component } from 'react';
 // custom components and helper files
 import { ScrollView } from 'react-native';
 
-import { loadingSpinner } from '../../components/loadingSpinner';
+import { LoadingSpinner } from '../../components/loadingSpinner';
 import { userContext } from '../../context/user';
 import { getTermFromDictionary } from '../../translations/TranslationService';
 import { LIBRARY } from '../../util/loadLibrary';
@@ -269,7 +269,7 @@ export default class Facet extends Component {
           const { facets, category, multiSelect } = this.state;
 
           if (this.state.isLoading) {
-               return loadingSpinner();
+               return <LoadingSpinner />;
           }
 
           if (category === 'publishDate' || category === 'birthYear' || category === 'deathYear' || category === 'publishDateSort') {
