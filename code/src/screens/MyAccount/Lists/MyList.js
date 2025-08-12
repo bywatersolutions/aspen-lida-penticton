@@ -7,6 +7,7 @@ import _ from 'lodash';
 import moment from 'moment';
 import {
      Badge,
+     BadgeText,
      Box,
      Button,
      ButtonGroup,
@@ -279,7 +280,7 @@ export const MyList = () => {
                                    {registrationRequired ? (
                                         <HStack mt="$1" direction="row" space="sm" flexWrap="wrap">
                                              <Badge key={0} colorScheme="secondary" mt="$1" variant="outline" rounded="4px" fontSize="$xs">
-                                                  {getTermFromDictionary(language, 'registration_required')}
+                                                  <BadgeText>{getTermFromDictionary(language, 'registration_required')}</BadgeText>
                                              </Badge>
                                         </HStack>
                                    ) : null}

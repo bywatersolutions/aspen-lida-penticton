@@ -3,7 +3,7 @@ import { useQueries, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Image } from 'expo-image';
 import _ from 'lodash';
 import moment from 'moment';
-import { Badge, Box, Center, FlatList, HStack, Pressable, Text, VStack } from '@gluestack-ui/themed';
+import { Badge, BadgeText, Box, Center, FlatList, HStack, Pressable, Text, VStack } from '@gluestack-ui/themed';
 import React from 'react';
 import { SafeAreaView } from 'react-native';
 
@@ -115,7 +115,7 @@ export const MyLists = () => {
                          onPress={() => {
                               handleOpenList(item);
                          }}
-                         borderBottomWidth="1"
+                         borderBottomWidth="$1"
                          _dark={{ borderColor: 'gray.600' }}
                          borderColor="coolGray.200"
                          pl="1"
@@ -135,7 +135,7 @@ export const MyLists = () => {
                                         transition={1000}
                                         contentFit="cover"
                                    />
-                                   <Badge mt={1}>{privacy}</Badge>
+                                   <Badge mt={1}><BadgeText>{privacy}</BadgeText></Badge>
                               </VStack>
                               <VStack space={1} justifyContent="space-between" maxW="80%">
                                    <Box>

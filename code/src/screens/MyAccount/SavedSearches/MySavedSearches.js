@@ -96,7 +96,7 @@ const Item = (data) => {
                onPress={() => {
                     openSavedSearch();
                }}
-               borderBottomWidth="1"
+               borderBottomWidth="$1"
                _dark={{ borderColor: 'gray.600' }}
                borderColor="coolGray.200"
                pl="1"

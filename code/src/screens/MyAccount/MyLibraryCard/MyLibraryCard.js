@@ -404,8 +404,8 @@ const CardCarousel = (data) => {
                     mr="$1"
                     mb="$1"
                     bgColor={index === currentIndex ? theme['colors']['tertiary']['500'] : '$none'}
-                    borderColor={index === currentIndex ? '$none' : theme['colors']['tertiary']['500']}
-                    borderWidth={index === currentIndex ? '$none' : '$1'}
+                    borderColor={index === currentIndex ? 'transparent' : theme['colors']['tertiary']['500']}
+                    borderWidth={index === currentIndex ? 0 : 1}
                     variant={index === currentIndex ? 'solid' : 'outline'}
                     onPress={() => {
                          ref.current.scrollTo({
