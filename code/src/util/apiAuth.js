@@ -497,7 +497,8 @@ export function getErrorMessage({ statusCode, problem, sendToSentry = false }) {
           }
      }
 
-     if (sendToSentry) {
+     // Always send to Sentry unless in DEV environment
+     if ((!__DEV__) || (__DEV__ && sendToSentry)) {
           Sentry.captureMessage(
                `[${errorDetails.title}] ${errorDetails.message}`,
                {
