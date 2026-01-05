@@ -196,6 +196,10 @@ const DisplayBrowseCategoryRecord = ({record}) => {
           id = record.textId;
      }
 
+     if (!_.isUndefined(record.listId) && !_.isUndefined(record.sourceId)) {
+          id = record.sourceId;
+     }
+
      if (type === 'Event') {
           if (_.includes(id, 'lc_')) {
                type = 'library_calendar_event';
@@ -216,6 +220,10 @@ const DisplayBrowseCategoryRecord = ({record}) => {
 
      if(type !== 'aspenEvent_event') {
           type = type.toLowerCase();
+     }
+
+     if(type === 'groupedwork') {
+          type = 'grouped_work';
      }
 
      const blurhash = 'MHPZ}tt7*0WC5S-;ayWBofj[K5RjM{ofM_';
