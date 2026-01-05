@@ -69,7 +69,7 @@ const CreateList = (props) => {
      const [groupName, setGroupName] = React.useState('');
      const [newGroupName, setNewGroupName] = React.useState('');
      const [nestedGroup, setNestedGroup] = React.useState('');
-     const [existingGroupId, setExistingGroupId] = React.useState(user.lastListGroupAdded ? user.lastListGroupAdded : listGroups.groups[0].id);
+     const [existingGroupId, setExistingGroupId] = React.useState(user.lastListGroupAdded ? user.lastListGroupAdded : (listGroups?.groups[0] ? listGroups.groups[0].id : 0));
 
      const insets = useSafeAreaInsets();
 

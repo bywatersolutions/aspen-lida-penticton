@@ -73,7 +73,7 @@ export const AddToList = (props) => {
      const [groupName, setGroupName] = React.useState('');
      const [newGroupName, setNewGroupName] = React.useState('');
      const [nestedGroup, setNestedGroup] = React.useState('');
-     const [existingGroupId, setExistingGroupId] = React.useState(user.lastListGroupAdded ? user.lastListGroupAdded : listGroups.groups[0].id);;
+     const [existingGroupId, setExistingGroupId] = React.useState(user.lastListGroupAdded ? user.lastListGroupAdded : (listGroups?.groups[0] ? listGroups.groups[0].id : 0));
 
      let hasListGroups = false;
      if(user.numListGroups) {
@@ -92,12 +92,12 @@ export const AddToList = (props) => {
           }
      };
 
-     const updateLastListUsed = async (id) => {
-          queryClient.invalidateQueries({ queryKey: ['list', id] });
+     const updateLastListUsed = async (itemId) => {
+          queryClient.invalidateQueries({ queryKey: ['list', itemId] });
           queryClient.invalidateQueries({ queryKey: ['lists', user.id, library.baseUrl, language] });
           queryClient.invalidateQueries({ queryKey: ['user', library.baseUrl, language] });
-          PATRON.listLastUsed = id;
-          setListId(id);
+          PATRON.listLastUsed = itemId;
+          setListId(itemId);
      };
 
      const LargeButton = () => {
