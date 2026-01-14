@@ -3,6 +3,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import Constants from 'expo-constants';
 import * as Location from 'expo-location';
 import * as SecureStore from 'expo-secure-store';
+import * as WebBrowser from 'expo-web-browser';
 import _ from 'lodash';
 import { Box, Button, ButtonGroup, ButtonText, ButtonIcon, Center, Image, Text, KeyboardAvoidingView } from '@gluestack-ui/themed';
 import React from 'react';
@@ -53,6 +54,7 @@ export const LoginScreen = () => {
      const [ils, setIls] = React.useState('koha');
      const [enableSelfRegistration, setEnableSelfRegistration] = React.useState(false);
      const [selfRegistrationFields, setSelfRegistrationFields] = React.useState([]);
+     const [selfRegistrationURL, setSelfRegistrationURL] = React.useState("");
      const { updateLibrary } = React.useContext(LibrarySystemContext);
      const { theme, colorMode, textColor, updateTheme, updateColorMode } = React.useContext(ThemeContext);
      const insets = useSafeAreaInsets();
@@ -129,48 +131,50 @@ export const LoginScreen = () => {
           LIBRARY.url = data.baseUrl; // used in some cases before library context is set
           await getLibraryInfo(data.baseUrl, data.libraryId).then(async (result) => {
                if (_.isObject(result)) {
-                    const library = data.data.result?.library ?? [];
+                    const library = result.data.result?.library ?? [];
                     logDebugMessage("Updating library from Login screen");
                     updateLibrary(library);
-                    if (result.barcodeStyle) {
+                    if (library.barcodeStyle) {
                          setAllowBarcodeScanner(true);
-                         if (result.barcodeStyle === 'CODE39') {
+                         if (library.barcodeStyle === 'CODE39') {
                               setAllowCode39(true);
                          }
                     } else {
                          setAllowBarcodeScanner(false);
                     }
 
-                    if (result.usernameLabel) {
-                         setUsernameLabel(result.usernameLabel);
+                    if (library.usernameLabel) {
+                         setUsernameLabel(library.usernameLabel);
                     }
 
-                    if (result.passwordLabel) {
-                         setPasswordLabel(result.passwordLabel);
+                    if (library.passwordLabel) {
+                         setPasswordLabel(library.passwordLabel);
                     }
 
-                    if (result.enableForgotPasswordLink) {
-                         setEnableForgotPasswordLink(result.enableForgotPasswordLink);
+                    if (library.enableForgotPasswordLink) {
+                         setEnableForgotPasswordLink(library.enableForgotPasswordLink);
                     }
 
-                    if (result.enableForgotBarcode) {
-                         setEnableForgotBarcode(result.enableForgotBarcode);
+                    if (library.enableForgotBarcode) {
+                         setEnableForgotBarcode(library.enableForgotBarcode);
                     }
 
-                    if (result.forgotPasswordType) {
-                         setForgotPasswordType(result.forgotPasswordType);
+                    if (library.forgotPasswordType) {
+                         setForgotPasswordType(library.forgotPasswordType);
                     }
 
-                    if (result.ils) {
-                         setIls(result.ils);
+                    if (library.ils) {
+                         setIls(library.ils);
                     }
 
-                    if (result.catalogRegistrationCapabilities) {
-                              if(String(result.catalogRegistrationCapabilities.enableSelfRegistration) === '1' && String(result.catalogRegistrationCapabilities.enableSelfRegistrationInApp) === '1') {
-                                   setEnableSelfRegistration(1);
-                              } else {
-                                   setEnableSelfRegistration(0);
-                              }
+                    if (library.catalogRegistrationCapabilities) {
+                         if(String(library.catalogRegistrationCapabilities.enableSelfRegistration) === '1' && String(library.catalogRegistrationCapabilities.enableSelfRegistrationInApp) === '1') {
+                              setEnableSelfRegistration(1);
+                         } else {
+                              setEnableSelfRegistration(0);
+                         }
+                         //even if the url isn't set this will just be an empty string
+                         setSelfRegistrationURL(library.catalogRegistrationCapabilities.selfRegistrationUrl);
                     }
                }
           });
@@ -178,7 +182,14 @@ export const LoginScreen = () => {
      };
 
      const openSelfRegistration = () => {
-          navigate('SelfRegistration', { libraryUrl: LIBRARY.url });
+          if(selfRegistrationURL)
+          {
+               WebBrowser.openBrowserAsync(selfRegistrationURL);
+          }
+          else
+          {
+               navigate('SelfRegistration', { libraryUrl: LIBRARY.url });
+          }
      };
 
      if (isLoading) {
