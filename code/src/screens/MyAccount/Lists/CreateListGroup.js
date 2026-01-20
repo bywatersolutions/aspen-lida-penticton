@@ -11,7 +11,7 @@ import { Platform } from 'react-native';
 import _ from 'lodash';
 
 const CreateListGroup = (props) => {
-     const { setLoading } = props;
+     const { setLoading, updateSelectedListGroup } = props;
      const queryClient = useQueryClient();
      const { user, listGroups } = React.useContext(UserContext);
      const { library } = React.useContext(LibrarySystemContext);
@@ -67,12 +67,14 @@ const CreateListGroup = (props) => {
                                         name="should_nest_list_group"
                                         selectedValue={nestedGroupId}
                                         accessibilityLabel={getTermFromDictionary(language, 'should_nest_list_group')}
-                                        mt="$1"
-                                        mb="$2"
                                         onValueChange={(itemValue) => setNestedGroupId(itemValue)}>
                                         <SelectTrigger variant="outline" size="md">
                                              {nestedGroupId !== "no" && nestedGroupId !== "" ? (
-                                                  <SelectInput color={textColor} value={nestedGroupId} />
+                                                  _.map(Object.values(listGroups.groups), function (group, selectedIndex, array) {
+                                                       if (group.id === nestedGroupId) {
+                                                            return <SelectInput value={group.title} color={textColor} />;
+                                                       }
+                                                  })
                                              ) : (
                                                   <SelectInput value={getTermFromDictionary(language, 'nest_within_group_no')} color={textColor} />
                                              )}
@@ -87,7 +89,7 @@ const CreateListGroup = (props) => {
                                                   <SelectDragIndicatorWrapper>
                                                        <SelectDragIndicator />
                                                   </SelectDragIndicatorWrapper>
-                                                  <SelectItem label={getTermFromDictionary(language, 'nest_within_group_no')} value="no" key={1} sx={{ _text: { color: textColor } }} />
+                                                  <SelectItem label={getTermFromDictionary(language, 'nest_within_group_no')} value="no" key={1} bgColor={nestedGroupId === "no" ? theme['colors']['tertiary']['300'] : ''} sx={{ _text: { color: nestedGroupId === "no" ? theme['colors']['tertiary']['500-text'] : textColor } }} />
                                                   {_.map(Object.values(listGroups.groups), function (item, index, array) {
                                                        return <SelectItem key={index} value={item.id} label={item.title} bgColor={nestedGroupId === item.id ? theme['colors']['tertiary']['300'] : ''} sx={{ _text: { color: nestedGroupId === item.id ? theme['colors']['tertiary']['500-text'] : textColor } }} />;
                                                   })}
@@ -113,12 +115,14 @@ const CreateListGroup = (props) => {
                                                   if (!res.data.result.success) {
                                                        status = 'error';
                                                   }
-                                                  queryClient.invalidateQueries({ queryKey: ['user', library.baseUrl, language] });
-                                                  queryClient.invalidateQueries({ queryKey: ['lists', user.id, library.baseUrl, language] });
                                                   queryClient.invalidateQueries({ queryKey: ['list_groups', user.id, library.baseUrl, language] });
+                                                  queryClient.invalidateQueries({ queryKey: ['user', library.baseUrl, language] });
                                                   toggle();
                                                   setLoading(true);
                                                   popAlert(getTermFromDictionary(language, 'list_created'), res.data.result.message, status);
+                                                  if(res.data.result.groupId) {
+                                                       updateSelectedListGroup(res.data.result.groupId);
+                                                  }
                                              });
                                         }}>
                                         <ButtonText color={theme['colors']['primary']['500-text']}>{getTermFromDictionary(language, 'create_list_group')}</ButtonText>

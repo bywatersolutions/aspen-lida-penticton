@@ -28,7 +28,7 @@ import { fetchSavedEvents } from '../../util/api/event';
 import { getCatalogStatus } from '../../util/api/library';
 import { formatLists, getListGroups, getLists } from '../../util/api/list';
 import { getLocations } from '../../util/api/location';
-import { fetchNotificationHistory, fetchReadingHistory, fetchSavedSearches, getLinkedAccounts, getPatronCheckedOutItems, sortCheckouts, getPatronHolds, sortHolds, getViewerAccounts, refreshProfile, reloadProfile, revalidateUser, validateSession, formatReadingHistory, formatNotificationHistory, formatLinkedAccounts, formatHolds } from '../../util/api/user';
+import { fetchNotificationHistory, fetchSavedSearches, getLinkedAccounts, getPatronCheckedOutItems, sortCheckouts, getPatronHolds, sortHolds, getViewerAccounts, refreshProfile, reloadProfile, revalidateUser, validateSession, formatNotificationHistory, formatLinkedAccounts, formatHolds } from '../../util/api/user';
 import { getErrorMessage, passUserToDiscovery, stripHTML } from '../../util/apiAuth';
 import { GLOBALS } from '../../util/globals';
 import { formatDiscoveryVersion, formatPickupLocations, getPickupLocations, reloadBrowseCategories } from '../../util/loadLibrary';
@@ -407,26 +407,6 @@ export const DrawerContent = () => {
           },
           onError: (error) => {
                logDebugMessage("Error fetching saved searches for user");
-               logErrorMessage(error);
-          }
-     });
-
-     useQuery(['reading_history', user.id, library.baseUrl, 1, 'checkedOut'], () => fetchReadingHistory(1, 20, 'checkedOut', '', library.baseUrl, language), {
-          refetchInterval: 60 * 1000 * 30,
-          refetchIntervalInBackground: true,
-          placeholderData: [],
-          onSuccess: (data) => {
-               if(data.ok) {
-                    const readingHistory = formatReadingHistory(data.data.result);
-                    updateReadingHistory(readingHistory);
-               } else {
-                    logDebugMessage("Error fetching reading history for user");
-                    logDebugMessage(data);
-                    getErrorMessage(data.code, data.problem)
-               }
-          },
-          onError: (error) => {
-               logDebugMessage("Error fetching reading history for user");
                logErrorMessage(error);
           }
      });
@@ -915,6 +895,8 @@ const ReadingHistory = () => {
                     </HStack>
                </Pressable>
           );
+     }else{
+          logDebugMessage("Version too old to show Reading History " + version);
      }
 
      return null;

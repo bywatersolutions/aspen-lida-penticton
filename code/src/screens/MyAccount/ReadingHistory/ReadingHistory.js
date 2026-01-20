@@ -95,26 +95,24 @@ export const MyReadingHistory = () => {
      }, [navigation]);
 
      const { status, data, error, isFetching, isPreviousData } = useQuery(['reading_history', user.id, library.baseUrl, page, sort, searchTerm], () => fetchReadingHistory(page, pageSize, sort, searchTerm, library.baseUrl), {
-          initialData: readingHistory,
-          keepPreviousData: true,
-          staleTime: 1000,
           onSuccess: (data) => {
+               logDebugMessage("Reading history fetched ");
                if(data.ok) {
-                    const readingHistory = formatReadingHistory(data.data.result);
-                    updateReadingHistory(readingHistory);
-                    if (readingHistory.totalPages) {
+                    const tmpReadingHistory = formatReadingHistory(data.data.result);
+                    updateReadingHistory(tmpReadingHistory);
+                    if (tmpReadingHistory.totalPages) {
                          let tmp = getTermFromDictionary(language, 'page_of_page');
                          tmp = tmp.replace('%1%', page);
-                         tmp = tmp.replace('%2%', readingHistory.totalPages);
+                         tmp = tmp.replace('%2%', tmpReadingHistory.totalPages);
                          setPaginationLabel(tmp);
                     }
+                    setLoading(false);
                } else {
                     logDebugMessage("Error fetching reading history for user");
                     logDebugMessage(data);
                     getErrorMessage(data.code, data.problem)
                }
           },
-          onSettle: (data) => setLoading(false),
           onError: (error) => {
                logDebugMessage("Error fetching reading history for user");
                logErrorMessage(error);
@@ -210,19 +208,17 @@ export const MyReadingHistory = () => {
      const updateSort = async (value) => {
           logDebugMessage('updateSort for reading history: ' + value);
           setLoading(true);
+          //await queryClient.invalidateQueries({ queryKey: ['reading_history', user.id, library.baseUrl, page, sort] });
           setSort(value);
-          await queryClient.invalidateQueries({ queryKey: ['reading_history', user.id, library.baseUrl, page, sort] });
           await queryClient.refetchQueries({ queryKey: ['reading_history', user.id, library.baseUrl, page, value] });
-          setLoading(false);
      };
 
      const updatePage = async (value) => {
           logDebugMessage('updatePage for reading history: ' + value);
           setLoading(true);
+          //await queryClient.invalidateQueries({ queryKey: ['reading_history', user.id, library.baseUrl, page, sort, searchTerm] });
           setPage(value);
-          await queryClient.invalidateQueries({ queryKey: ['reading_history', user.id, library.baseUrl, page, sort, searchTerm] });
           await queryClient.refetchQueries({ queryKey: ['reading_history', user.id, library.baseUrl, value, sort, searchTerm] });
-          setLoading(false);
      };
 
      const search = async () => {
@@ -230,13 +226,17 @@ export const MyReadingHistory = () => {
           setLoading(true);
           setPage(1);
           setSearchTerm(filter);
-          await queryClient.invalidateQueries({ queryKey: ['reading_history', user.id, library.baseUrl, 1, sort, searchTerm] });
+          //await queryClient.invalidateQueries({ queryKey: ['reading_history', user.id, library.baseUrl, 1, sort, searchTerm] });
           await queryClient.refetchQueries({ queryKey: ['reading_history', user.id, library.baseUrl, 1, sort, filter] });
-          setLoading(false);
+          //setLoading(false);
      }
 
-     const clearSearch = () => {
+     const clearSearch = async () => {
+          setLoading(true);
+          setPage(1);
           setSearchTerm('');
+          //await queryClient.invalidateQueries({ queryKey: ['reading_history', user.id, library.baseUrl, 1, sort, searchTerm] });
+          await queryClient.refetchQueries({ queryKey: ['reading_history', user.id, library.baseUrl, 1, sort, searchTerm] });
      }
 
      const [expanded, setExpanded] = React.useState(false);
@@ -439,7 +439,7 @@ export const MyReadingHistory = () => {
      };
 
      const Paging = () => {
-          if (data?.totalResults > 0) {
+          if (readingHistory?.totalResults > 0) {
                return (
                     <Box
                          p="$2"
@@ -450,33 +450,26 @@ export const MyReadingHistory = () => {
                          alignItems="center">
                          <ScrollView horizontal>
                               <ButtonGroup size="sm">
-                                   <Button bgColor={theme['colors']['primary']['500']} onPress={() => updatePage(page - 1)} isDisabled={page === 1}>
+                                   <Button
+                                        bgColor={theme['colors']['primary']['500']}
+                                        onPress={async () => {
+                                            if (page > 1) {
+                                                 updatePage(page - 1)
+                                            }
+                                        }}
+                                        isDisabled={page === 1}>
                                         <ButtonText color={theme['colors']['primary']['500-text']} >{getTermFromDictionary(language, 'previous')}</ButtonText>
                                    </Button>
                                    <Button
                                         bgColor={theme['colors']['primary']['500']}
                                         onPress={async () => {
-                                             if (!isPreviousData && data?.hasMore) {
+                                             if (readingHistory?.hasMore) {
                                                   logDebugMessage('Adding to page');
                                                   let newPage = page + 1;
                                                   updatePage(newPage);
-                                                  setLoading(true);
-                                                  await fetchReadingHistory(newPage, pageSize, sort, searchTerm, library.baseUrl).then((result) => {
-                                                       updateReadingHistory(data);
-                                                       if (data.totalPages) {
-                                                            let tmp = getTermFromDictionary(language, 'page_of_page');
-                                                            tmp = tmp.replace('%1%', newPage);
-                                                            tmp = tmp.replace('%2%', data.totalPages);
-                                                            logDebugMessage(tmp);
-                                                            setPaginationLabel(tmp);
-                                                       }
-                                                       queryClient.setQueryData(['reading_history', user.id, library.baseUrl, page, sort], result);
-                                                       queryClient.setQueryData(['reading_history', user.id, library.baseUrl, newPage, sort], result);
-                                                  });
-                                                  setLoading(false);
                                              }
                                         }}
-                                        isDisabled={isPreviousData || !data?.hasMore}>
+                                        isDisabled={isPreviousData || !readingHistory?.hasMore}>
                                         <ButtonText color={theme['colors']['primary']['500-text']} >{getTermFromDictionary(language, 'next')}</ButtonText>
                                    </Button>
                               </ButtonGroup>
@@ -486,8 +479,9 @@ export const MyReadingHistory = () => {
                          </Text>
                     </Box>
                );
+          }else{
+               return null;
           }
-          return null;
      };
 
      const showSystemMessage = () => {
@@ -520,7 +514,7 @@ export const MyReadingHistory = () => {
                               loadError('Error', '')
                          ) : (
                               <>
-                                   <FlatList data={data.history} ListEmptyComponent={Empty} ListFooterComponent={Paging} ListHeaderComponent={getDisclaimer} renderItem={({ item }) => <Item data={item} />} keyExtractor={(item, index) => index.toString()} contentContainerStyle={{ paddingBottom: 30 }} />
+                                   <FlatList data={readingHistory?.history} ListEmptyComponent={Empty} ListFooterComponent={Paging} ListHeaderComponent={getDisclaimer} renderItem={({ item }) => <Item data={item} />} keyExtractor={(item, index) => index.toString()} contentContainerStyle={{ paddingBottom: 30 }} />
                               </>
                          )}
                     </>
@@ -559,6 +553,8 @@ const Item = (data) => {
                if (result) {
                     queryClient.invalidateQueries({ queryKey: ['user'] });
                     queryClient.invalidateQueries({ queryKey: ['reading_history'] });
+                    setLoading(true);
+                    await queryClient.refetchQueries({ queryKey: ['reading_history', user.id, library.baseUrl, page, sort, searchTerm] });
                }
           });
      };
@@ -639,6 +635,9 @@ const Item = (data) => {
                     </Actionsheet>
                </Pressable>
           );
+     }else{
+          return (
+               <Text>Unknown title</Text>
+         );
      }
-     return null;
 };

@@ -10,13 +10,29 @@ import { getTermFromDictionary } from '../../../translations/TranslationService'
 import { deleteList, editList, getListDetails } from '../../../util/api/list';
 import { PATRON } from '../../../util/loadPatron';
 import {
-     AlertDialog, AlertDialogContent, AlertDialogBody, AlertDialogFooter, Text,
-     Button, ButtonText, ButtonGroup,
+     AlertDialog,
+     AlertDialogContent,
+     AlertDialogBody,
+     AlertDialogFooter,
+     Text,
+     Button,
+     ButtonText,
+     ButtonGroup,
      Pressable,
-     Center, Heading, Icon, Input, InputField, Modal,
-     CircleIcon, CloseIcon, ModalBackdrop, ChevronLeftIcon,
+     Center,
+     Heading,
+     Icon,
+     Input,
+     InputField,
+     Modal,
+     CircleIcon,
+     CloseIcon,
+     ModalBackdrop,
+     ChevronLeftIcon,
      ModalCloseButton,
-     ModalContent, ModalBody, ModalFooter,
+     ModalContent,
+     ModalBody,
+     ModalFooter,
      ModalHeader,
      RadioGroup,
      Radio,
@@ -28,19 +44,36 @@ import {
      Textarea,
      FormControl,
      FormControlLabel,
-     FormControlLabelText, AlertDialogBackdrop, AlertDialogCloseButton, AlertDialogHeader, ButtonIcon,
+     FormControlLabelText,
+     AlertDialogBackdrop,
+     AlertDialogCloseButton,
+     AlertDialogHeader,
+     ButtonIcon,
      Checkbox,
      CheckboxIndicator,
      CheckboxIcon,
      CheckboxLabel,
      CheckIcon,
+     SelectTrigger,
+     SelectInput,
+     SelectIcon,
+     ChevronDownIcon,
+     SelectPortal,
+     SelectBackdrop,
+     SelectContent,
+     SelectDragIndicatorWrapper,
+     SelectDragIndicator,
+     SelectItem,
+     Select,
 } from '@gluestack-ui/themed';
+import {Platform} from "react-native";
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const EditList = (props) => {
      const queryClient = useQueryClient();
      const { data, listId } = props;
      const navigation = useNavigation();
-     const { user } = React.useContext(UserContext);
+     const { user, listGroups } = React.useContext(UserContext);
      const { library } = React.useContext(LibrarySystemContext);
      const { language } = React.useContext(LanguageContext);
      const [showModal, setShowModal] = React.useState(false);
@@ -49,7 +82,10 @@ const EditList = (props) => {
      const [description, setDescription] = React.useState(data.description);
      const [list, setList] = React.useState([]);
      const [isPublic, setPublic] = React.useState(data.public);
+     const [listGroupId, setListGroupId] = React.useState(data.listGroupId);
      const { theme, textColor, colorMode } = React.useContext(ThemeContext);
+
+     const insets = useSafeAreaInsets();
 
      useQuery(['list-details', data.id], () => getListDetails(data.id, library.baseUrl), {
           onSuccess: (data) => {
@@ -104,7 +140,7 @@ const EditList = (props) => {
                                    <FormControlLabel><FormControlLabelText color={textColor}>{getTermFromDictionary(language, 'description')}</FormControlLabelText></FormControlLabel>
                                    <Textarea id="description" defaultValue={data.description} autoComplete="off" onChangeText={(text) => setDescription(text)}><TextareaInput color={textColor}/></Textarea>
                               </FormControl>
-                              <FormControl>
+                              <FormControl pb="$5">
                                    <FormControlLabel>
                                      <FormControlLabelText color={textColor}>{getTermFromDictionary(language, 'access')}</FormControlLabelText>
                                    </FormControlLabel>
@@ -129,6 +165,44 @@ const EditList = (props) => {
                                         </HStack>
                                    </RadioGroup>
                               </FormControl>
+                              <FormControl>
+                                   <FormControlLabel>
+                                        <FormControlLabelText color={textColor}>{getTermFromDictionary(language, 'list_group')}</FormControlLabelText>
+                                   </FormControlLabel>
+                                   <Select
+                                       name="newListGroupParent"
+                                       selectedValue={listGroupId}
+                                       accessibilityLabel={getTermFromDictionary(language, 'list_group')}
+                                       onValueChange={(itemValue) => setListGroupId(itemValue)}>
+                                        <SelectTrigger variant="outline" size="md">
+                                             {listGroupId != -1 ? (
+                                                       _.map(Object.values(listGroups.groups), function (group, selectedIndex, array) {
+                                                            if (group.id === listGroupId) {
+                                                                 return <SelectInput value={group.title} color={textColor} />;
+                                                            }
+                                                       })
+                                                  ) :
+                                                  <SelectInput placeholder={getTermFromDictionary(language, 'no_list_group')} value={-1} color={textColor} />
+                                             }
+                                             <SelectIcon mr="$3" as={ChevronDownIcon} color={textColor} />
+                                        </SelectTrigger>
+                                        <SelectPortal>
+                                             <SelectBackdrop />
+                                             <SelectContent
+                                                 bgColor={colorMode === 'light' ? theme['colors']['warmGray']['50'] : theme['colors']['coolGray']['700']}
+                                                 pb={Platform.OS === 'android' ? insets.bottom + 16 : '$4'}
+                                             >
+                                                  <SelectDragIndicatorWrapper>
+                                                       <SelectDragIndicator />
+                                                  </SelectDragIndicatorWrapper>
+                                                  <SelectItem label={getTermFromDictionary(language, 'no_list_group')} value="-1" key={-1} sx={{ _text: { color: listGroupId == -1 ? theme['colors']['tertiary']['500-text'] : textColor } }} />
+                                                  {_.map(listGroups.groups, function (item, index, array) {
+                                                       return <SelectItem key={index} value={item.id} label={item.title} bgColor={listGroupId === item.id ? theme['colors']['tertiary']['300'] : ''} sx={{ _text: { color: listGroupId === item.id ? theme['colors']['tertiary']['500-text'] : textColor } }} />;
+                                                  })}
+                                             </SelectContent>
+                                        </SelectPortal>
+                                   </Select>
+                              </FormControl>
                          </ModalBody>
                          <ModalFooter>
                               <ButtonGroup>
@@ -141,7 +215,7 @@ const EditList = (props) => {
                                         isLoadingText={getTermFromDictionary(language, 'saving', true)}
                                         onPress={() => {
                                              setLoading(true);
-                                             editList(data.id, title, description, isPublic, library.baseUrl).then((r) => {
+                                             editList(data.id, title, description, isPublic, library.baseUrl, listGroupId).then((r) => {
                                                   setLoading(false);
                                                   if (!_.isNull(title)) {
                                                        navigation.setOptions({ title: title });

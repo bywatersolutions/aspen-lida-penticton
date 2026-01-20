@@ -88,9 +88,9 @@ const CreateList = (props) => {
           setGroupName('');
           setNewGroupName('');
           setNestedGroup('');
-          setExistingGroupId(user.lastListGroupAdded ? user.lastListGroupAdded : listGroups.groups[0].id);
+          setExistingGroupId(user.lastListGroupAdded ? user.lastListGroupAdded : (listGroups?.groups[0] ? listGroups.groups[0].id : 0));
      };
-
+     
      return (
           <Center>
                <Button onPress={toggle} size="sm" bgColor={theme['colors']['primary']['500']}>
@@ -155,8 +155,6 @@ const CreateList = (props) => {
                                         name="should_add_to_list_group"
                                         selectedValue={addToGroup}
                                         accessibilityLabel={getTermFromDictionary(language, 'should_add_to_list_group')}
-                                        mt="$1"
-                                        mb="$2"
                                         onValueChange={(itemValue) => setAddToGroup(itemValue)}>
                                         <SelectTrigger variant="outline" size="md">
                                              {addToGroup !== "" ? (
@@ -175,9 +173,9 @@ const CreateList = (props) => {
                                                   <SelectDragIndicatorWrapper>
                                                        <SelectDragIndicator />
                                                   </SelectDragIndicatorWrapper>
-                                                  <SelectItem label={getTermFromDictionary(language, 'add_to_list_group_no')} value="no" key={1} sx={{ _text: { color: textColor } }} />
-                                                  <SelectItem label={getTermFromDictionary(language, 'add_to_list_group_new')} value="new" key={2} sx={{ _text: { color: textColor } }} />
-                                                  {hasListGroups && (<SelectItem label={getTermFromDictionary(language, 'add_to_list_group_existing')} value="existing" key={3} sx={{ _text: { color: textColor } }} />)}
+                                                  <SelectItem label={getTermFromDictionary(language, 'add_to_list_group_no')} value="no" key={1} bgColor={addToGroup === "no" ? theme['colors']['tertiary']['300'] : ''} sx={{ _text: { color: addToGroup === "no" ? theme['colors']['tertiary']['500-text'] : textColor } }} />
+                                                  <SelectItem label={getTermFromDictionary(language, 'add_to_list_group_new')} value="new" key={2} bgColor={addToGroup === "new" ? theme['colors']['tertiary']['300'] : ''} sx={{ _text: { color: addToGroup === "new" ? theme['colors']['tertiary']['500-text'] : textColor } }} />
+                                                  {hasListGroups && (<SelectItem label={getTermFromDictionary(language, 'add_to_list_group_existing')} value="existing" key={3} bgColor={addToGroup === "existing" ? theme['colors']['tertiary']['300'] : ''} sx={{ _text: { color: addToGroup === "existing" ? theme['colors']['tertiary']['500-text'] : textColor } }} />)}
                                              </SelectContent>
                                         </SelectPortal>
                                    </Select>
@@ -201,12 +199,14 @@ const CreateList = (props) => {
                                              name="should_nest_list_group"
                                              selectedValue={nestedGroup}
                                              accessibilityLabel={getTermFromDictionary(language, 'should_nest_list_group')}
-                                             mt="$1"
-                                             mb="$2"
                                              onValueChange={(itemValue) => setNestedGroup(itemValue)}>
                                              <SelectTrigger variant="outline" size="md">
                                                   {nestedGroup !== "no" && nestedGroup !== "" ? (
-                                                       <SelectInput color={textColor} value={nestedGroup} />
+                                                       _.map(Object.values(listGroups.groups), function (group, selectedIndex, array) {
+                                                            if (group.id === nestedGroup) {
+                                                                 return <SelectInput value={group.title} color={textColor} />;
+                                                            }
+                                                       })
                                                   ) : (
                                                        <SelectInput value={getTermFromDictionary(language, 'nest_within_group_no')} color={textColor} />
                                                   )}
@@ -221,7 +221,7 @@ const CreateList = (props) => {
                                                        <SelectDragIndicatorWrapper>
                                                             <SelectDragIndicator />
                                                        </SelectDragIndicatorWrapper>
-                                                       <SelectItem label={getTermFromDictionary(language, 'nest_within_group_no')} value="no" key={1} sx={{ _text: { color: textColor } }} />
+                                                       <SelectItem label={getTermFromDictionary(language, 'nest_within_group_no')} value="no" key={1} bgColor={nestedGroup === "no" ? theme['colors']['tertiary']['300'] : ''} sx={{ _text: { color: nestedGroup === "no" ? theme['colors']['tertiary']['500-text'] : textColor } }} />
                                                        {_.map(Object.values(listGroups.groups), function (item, index, array) {
                                                             return <SelectItem key={index} value={item.id} label={item.title} bgColor={nestedGroup === item.id ? theme['colors']['tertiary']['300'] : ''} sx={{ _text: { color: nestedGroup === item.id ? theme['colors']['tertiary']['500-text'] : textColor } }} />;
                                                        })}
@@ -238,16 +238,18 @@ const CreateList = (props) => {
                                         <FormControlLabelText color={textColor}>{getTermFromDictionary(language, 'choose_existing_list_group')}</FormControlLabelText>
                                    </FormControlLabel>
                                    <Select
-                                        selectedValue={existingGroupId !== -1 ? existingGroupId : listGroups.groups[0].id}
-                                        defaultValue={existingGroupId !== -1 ? existingGroupId : listGroups.groups[0].id}
+                                        selectedValue={existingGroupId}
+                                        defaultValue={existingGroupId}
                                         onValueChange={(itemValue) => {
                                              setExistingGroupId(itemValue);
+                                             setNestedGroup(itemValue);
+                                             console.log(itemValue);
                                         }}>
                                         <SelectTrigger variant="outline" size="md">
                                              {existingGroupId && existingGroupId !== -1 ? (
                                                        _.map(Object.values(listGroups.groups), function (group, selectedIndex, array) {
                                                             if (group.id === existingGroupId) {
-                                                                 return <SelectInput placeholder={group.title} value={group.id} color={textColor} />;
+                                                                 return <SelectInput value={group.title} color={textColor} />;
                                                             }
                                                        })
                                                   ) :
@@ -284,7 +286,7 @@ const CreateList = (props) => {
                                         isLoadingText={getTermFromDictionary(language, 'creating_list', true)}
                                         onPress={async () => {
                                              setAdding(true);
-                                             await createList(title, description, isPublic, library.baseUrl, addToGroup, nestedGroup, newGroupName).then(async (res) => {
+                                             await createList(title, description, isPublic, library.baseUrl, addToGroup, nestedGroup, newGroupName, existingGroupId).then(async (res) => {
                                                   let status = 'success';
                                                   if (!res.success) {
                                                        status = 'danger';

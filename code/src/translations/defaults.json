@@ -674,5 +674,8 @@
   "delete_list_group": "Delete List Group",
   "delete_list_group_confirmation": "Are you sure you want to delete this list group? All lists within the group will be moved to the parent group.",
   "should_delete_list_group":"Delete List Group?",
-  "unassigned_lists": "Unassigned Lists"
+  "unassigned_lists": "Unassigned Lists",
+  "list_group": "List Group",
+  "no_list_group": "No Group",
+  "select_new_parent": "Select a List Group"
 }

@@ -400,13 +400,15 @@ export const LoadingScreen = () => {
           onSuccess: (data) => {
                if(data.ok) {
                     const settings = data.data.result ?? [];
+                    logDebugMessage("Self Check Settings");
+                    logDebugMessage(settings);
                     setProgress(progress + (100 / numSteps));
                     if (LIBRARY.appSettings.loadingMessageType == 1) {
                          setLoadingText('Loading Self Check Information');
                     }
-                    if (data.success) {
-                         updateEnableSelfCheck(settings.isEnabled ?? false);
-                         updateSelfCheckSettings(settings);
+                    if (settings.success) {
+                         updateEnableSelfCheck(settings.settings.isEnabled ?? false);
+                         updateSelfCheckSettings(settings.settings);
                     } else {
                          updateEnableSelfCheck(false);
                     }
