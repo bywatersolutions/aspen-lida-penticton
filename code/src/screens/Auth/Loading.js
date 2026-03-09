@@ -14,7 +14,7 @@ import { getCatalogStatus, getLibraryInfo, getLibraryLanguages, getLibraryLinks,
 import { getLocationInfo, getSelfCheckSettings } from '../../util/api/location';
 import { fetchNotificationHistory, formatLinkedAccounts, formatNotificationHistory, getAppPreferencesForUser, getLinkedAccounts, refreshProfile } from '../../util/api/user';
 import { GLOBALS } from '../../util/globals';
-import { formatBrowseCategories, LIBRARY, reloadBrowseCategories } from '../../util/loadLibrary';
+import { getHomeScreenFeed, LIBRARY } from '../../util/loadLibrary';
 import { getBrowseCategoryListForUser, PATRON } from '../../util/loadPatron';
 import { CatalogOffline } from './CatalogOffline';
 import { ForceLogout } from './ForceLogout';
@@ -49,7 +49,7 @@ export const LoadingScreen = () => {
      const [hasIncomingUrlChanged, setIncomingUrlChanged] = React.useState(false);
 
      const { user, updateUser, accounts, updateLinkedAccounts, cards, updateLibraryCards, updateAppPreferences, notificationHistory, updateNotificationHistory, updateInbox } = React.useContext(UserContext);
-     const { library, updateLibrary, updateMenu, updateCatalogStatus, catalogStatus, catalogStatusMessage } = React.useContext(LibrarySystemContext);
+     const { library, updateLibrary, updateMenu, updateCatalogStatus, catalogStatus, catalogStatusMessage, updateHomeScreenLinks } = React.useContext(LibrarySystemContext);
      const { location, updateLocation, updateScope, updateEnableSelfCheck, updateSelfCheckSettings } = React.useContext(LibraryBranchContext);
      const { category, updateBrowseCategories, updateBrowseCategoryList, updateMaxCategories } = React.useContext(BrowseCategoryContext);
      const { language, updateLanguage, updateLanguages, updateDictionary, dictionary, languageDisplayName, updateLanguageDisplayName, languages } = React.useContext(LanguageContext);
@@ -308,32 +308,33 @@ export const LoadingScreen = () => {
           }
      });
 
-     const { isSuccess: browseCategoryQuerySuccess, status: browseCategoryQueryStatus, data: browseCategoryQuery } = useQuery(['browse_categories', LIBRARY.url, 'en', false], () => reloadBrowseCategories(5, LIBRARY.url), {
+     const { isSuccess: browseCategoryQuerySuccess, status: browseCategoryQueryStatus, data: browseCategoryQuery } = useQuery(['browse_categories', LIBRARY.url, 'en', false], () => getHomeScreenFeed(5, LIBRARY.url), {
           enabled: hasError === false && libraryLinksQuerySuccess,
           onSuccess: (data) => {
                if(data.ok) {
                     setProgress(progress + (100 / numSteps));
-                    const categories = formatBrowseCategories(data.data.result);
-                    updateBrowseCategories(categories);
+                    const result = data.data.result;
+                    updateBrowseCategories(result.browseCategories);
                     updateMaxCategories(5);
+                    updateHomeScreenLinks(result.homeScreenLinks);
                     if (LIBRARY.appSettings.loadingMessageType == 1) {
-                         setLoadingText('Loading Browse Category List');
+                         setLoadingText('Loading Home Screen Feed');
                     }
                } else {
-                    logDebugMessage("Error loading browse categories");
+                    logDebugMessage("Error loading browse categories and home screen links");
                     logDebugMessage(data);
                     const error = getErrorMessage(data.code ?? 0, data.problem);
                     setHasError(true);
                     setErrorMessage(error.message);
-                    setErrorTitle("Unable to load browse categories");
+                    setErrorTitle("Unable to load browse categories and home screen links");
                }
           },
           onError: (error) => {
-               logDebugMessage("Setting Error to true because loading browse categories failed");
+               logDebugMessage("Setting Error to true because loading browse categories and home screen links failed");
                logErrorMessage(error);
                setHasError(true);
                setErrorTitle(null);
-               setErrorMessage('Error loading browse categories. Please try again or contact the library.');
+               setErrorMessage('Error loading home screen feed. Please try again or contact the library.');
           }
      });
 

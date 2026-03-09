@@ -672,7 +672,7 @@ const BarcodeModal = ({ card, showModal, closeModal, language }) => {
           <Modal isOpen={showModal} onClose={closeModal} size="xl">
                     <ModalBackdrop sx={{ opacity: 0.85 }} />
                     <ModalContent bgColor="white">
-                         <ModalBody bgColor="white" p="$4">
+                         <ModalBody style={{margin: 20}} bgColor="white" p="$4">
                               {/* Always render barcode to measure it, but hide if showing warning. */}
                               <Box style={{ opacity: showRotateWarning ? 0 : 1, position: showRotateWarning ? 'absolute' : 'relative' }}>
                                    <Center p="$2">

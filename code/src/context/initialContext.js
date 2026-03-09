@@ -22,6 +22,8 @@ export const UserContext = React.createContext({
      accounts: [],
      updateLists: () => {},
      lists: [],
+     listGroups: [],
+     updateListGroups: () => {},
      updateLanguage: () => {},
      language: [],
      updatePickupLocations: () => {},
@@ -58,11 +60,12 @@ export const UserContext = React.createContext({
      userHoldPendingSortMethod: 'sortTitle',
      updateUserHoldReadySortMethod: 'expire',
      updateUserHoldPendingSortMethod: () => {},
-     updateUserHoldReadySortMethod: () => {},
      preferredPickupLocationIsValid: true,
      updatePreferredPickupLocationIsValid: () => {},
      preferredPickupLocationWarning: "",
      updatePreferredPickupLocationWarning: () => {},
+     savedSearches: [],
+     updateSavedSearches: () => {},
 });
 export const LibrarySystemContext = React.createContext({
      updateLibrary: () => {},
@@ -75,6 +78,8 @@ export const LibrarySystemContext = React.createContext({
      updateCatalogStatus: () => {},
      updateCatalogStatusMessage: () => {},
      updateMenu: () => {},
+     updateHomeScreenLinks: () => {},
+     homeScreenLinks: [],
      resetLibrary: () => {},
 });
 export const LibraryBranchContext = React.createContext({
@@ -230,6 +235,7 @@ export const LibrarySystemProvider = ({ children }) => {
      const [menu, setMenu] = useState();
      const [catalogStatus, setCatalogStatus] = useState();
      const [catalogStatusMessage, setCatalogStatusMessage] = useState();
+     const [homeScreenLinks, setHomeScreenLinks] = useState();
 
      const updateLibrary = (data) => {
           if (!_.isUndefined(data.discoveryVersion)) {
@@ -252,6 +258,11 @@ export const LibrarySystemProvider = ({ children }) => {
           logDebugMessage('updated LibrarySystemContext');
      };
 
+     const updateHomeScreenLinks = (data) => {
+          setHomeScreenLinks(data);
+          logDebugMessage('updated home screen links in LibrarySystemContext');
+     }
+
      const resetLibrary = () => {
           setLibrary({});
           setVersion({});
@@ -259,6 +270,7 @@ export const LibrarySystemProvider = ({ children }) => {
           setMenu({});
           setCatalogStatus(0);
           setCatalogStatusMessage('');
+          setHomeScreenLinks([]);
           logDebugMessage('reset LibrarySystemContext');
      };
 
@@ -298,6 +310,8 @@ export const LibrarySystemProvider = ({ children }) => {
                     catalogStatus,
                     catalogStatusMessage,
                     updateCatalogStatus,
+                    homeScreenLinks,
+                    updateHomeScreenLinks,
                }}>
                {children}
           </LibrarySystemContext.Provider>
@@ -376,6 +390,7 @@ export const UserProvider = ({ children }) => {
      const [accounts, setLinkedAccounts] = useState([]);
      const [viewers, setLinkedViewerAccounts] = useState([]);
      const [lists, setLists] = useState([]);
+     const [listGroups, setListGroups] = useState([]);
      const [language, setLanguage] = useState('en');
      const [languageDisplayName, setLanguageDisplayName] = useState('English');
      const [locations, setPickupLocations] = useState([]);
@@ -397,6 +412,7 @@ export const UserProvider = ({ children }) => {
      const [userHoldReadySortMethod, setUserHoldReadySortMethod] = useState('expire');
      const [preferredPickupLocationIsValid, setPreferredPickupLocationIsValid] = useState(true);
      const [preferredPickupLocationWarning, setPreferredPickupLocationWarning] = useState("");
+     const [savedSearches, setSavedSearches] = useState([]);
 
      const updateUser = (data) => {
           if (user !== data) {
@@ -433,6 +449,7 @@ export const UserProvider = ({ children }) => {
      const resetUser = () => {
           setUser({});
           setLists({});
+          setListGroups({});
           setLinkedAccounts({});
           setLanguage({});
           logDebugMessage('reset UserContext');
@@ -442,6 +459,11 @@ export const UserProvider = ({ children }) => {
           setLists(data);
           //logDebugMessage('updated lists in UserContext');
      };
+
+     const updateListGroups = (data) => {
+          setListGroups(data);
+          //logDebugMessage('updated list groups in UserContext');
+     }
 
      const updateLinkedAccounts = (data) => {
           setLinkedAccounts(data);
@@ -496,6 +518,11 @@ export const UserProvider = ({ children }) => {
      const updatePreferredPickupLocationWarning = (data) => {
           setPreferredPickupLocationWarning(data);
           //logDebugMessage('updated preferredPickupLocationWarning to ' + data + ' in UserContext');
+     };
+
+     const updateSavedSearches = (data) => {
+          setSavedSearches(data);
+          //logDebugMessage('updated updateSavedSearches to ' + data + ' in UserContext');
      };
 
      const updateNotificationSettings = async (data, language, userOnboardStatus) => {
@@ -631,7 +658,7 @@ export const UserProvider = ({ children }) => {
 
      const updateUserDebugMessage = (data) => {
           setUserDebugMessage(userDebugMessage => {
-               newArray = [data, ...userDebugMessage];
+               const newArray = [data, ...userDebugMessage];
                if (newArray.length > 50) {
                     // Return only the first 50 elements (indices 0 through 49)
                     return newArray.slice(0, 50);
@@ -678,6 +705,8 @@ export const UserProvider = ({ children }) => {
                     resetUser,
                     lists,
                     updateLists,
+                    listGroups,
+                    updateListGroups,
                     accounts,
                     updateLinkedAccounts,
                     viewers,
@@ -723,7 +752,9 @@ export const UserProvider = ({ children }) => {
                     updatePreferredPickupLocationIsValid,
                     preferredPickupLocationIsValid,
                     updatePreferredPickupLocationWarning,
-                    preferredPickupLocationWarning
+                    preferredPickupLocationWarning,
+                    savedSearches,
+                    updateSavedSearches,
                }}>
                {children}
           </UserContext.Provider>

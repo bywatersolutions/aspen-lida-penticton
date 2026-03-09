@@ -66,7 +66,7 @@ export const GetLoginForm = (props) => {
      const { updateLanguage } = React.useContext(LanguageContext);
      const patronsLibrary = props.selectedLibrary;
 
-     const { usernameLabel, passwordLabel, allowBarcodeScanner, allowCode39 } = props;
+     const { usernameLabel, passwordLabel, allowBarcodeScanner, allowCode39, updateSelectedLibrary } = props;
 
      React.useEffect(() => {
           const loadDefaultUsername = async () => {
@@ -206,24 +206,42 @@ export const GetLoginForm = (props) => {
           const autoPickUserHomeLocation = parseInt(LIBRARY.appSettings?.autoPickUserHomeLocation ?? 0);
 
           if (PATRON.homeLocationId && !includes(GLOBALS.slug, 'aspen-lida') && autoPickUserHomeLocation === 1) {
-               console.log(PATRON.homeLocationId);
-               await getLocationInfo(GLOBALS.url, PATRON.homeLocationId).then(async (patronsLibrary) => {
-                    if (!isUndefined(patronsLibrary.baseUrl)) {
-                         LIBRARY.url = patronsLibrary.baseUrl;
-                         await SecureStore.setItemAsync('library', JSON.stringify(patronsLibrary.libraryId));
-                         await AsyncStorage.setItem('@libraryId', JSON.stringify(patronsLibrary.libraryId));
-                         await SecureStore.setItemAsync('libraryName', patronsLibrary.parentLibraryDisplayName);
-                         await SecureStore.setItemAsync('locationId', JSON.stringify(patronsLibrary.locationId));
-                         await AsyncStorage.setItem('@locationId', JSON.stringify(patronsLibrary.locationId));
-                         await SecureStore.setItemAsync('solrScope', patronsLibrary.solrScope);
-
-                         await AsyncStorage.setItem('@solrScope', patronsLibrary.solrScope);
-                         await AsyncStorage.setItem('@pathUrl', patronsLibrary.baseUrl);
+               logDebugMessage('User has a home location set (' + PATRON.homeLocationId + ') and autoPickUserHomeLocation is enabled, attempting to use that location as default');
+               await getLocationInfo(LIBRARY.url, PATRON.homeLocationId).then(async (response) => {
+                    const patronHomeLocation = response.data.result.location;
+                    if (typeof patronHomeLocation.baseUrl !== 'undefined') {
+                         logDebugMessage('Successfully retrieved location info for user home location while logging in, setting asyncStorage library and location to: ' + patronHomeLocation.displayName + ' (' + patronHomeLocation.libraryId + ')');
+                         updateSelectedLibrary(patronHomeLocation);
+                         LIBRARY.url = patronHomeLocation.baseUrl;
+                         LIBRARY.id = patronHomeLocation.libraryId;
+                         await SecureStore.setItemAsync('library', JSON.stringify(patronHomeLocation.libraryId));
+                         await AsyncStorage.setItem('@libraryId', JSON.stringify(patronHomeLocation.libraryId));
+                         await SecureStore.setItemAsync('libraryName', patronHomeLocation.displayName);
+                         await SecureStore.setItemAsync('locationId', JSON.stringify(patronHomeLocation.locationId));
+                         await AsyncStorage.setItem('@locationId', JSON.stringify(patronHomeLocation.locationId));
+                         await SecureStore.setItemAsync('solrScope', patronHomeLocation.solrScope);
+                         await AsyncStorage.setItem('@solrScope', patronHomeLocation.solrScope);
+                         await AsyncStorage.setItem('@pathUrl', patronHomeLocation.baseUrl);
                     } else {
-                         // library isn't on correct version of 24.06 ?
+                         // just store what we know
+                         logDebugMessage('Problem getting location info for user home location. Setting library and location to: ' + patronsLibrary['name']);
+                         LIBRARY.url = patronsLibrary['baseUrl'];
+                         LIBRARY.id = patronsLibrary['libraryId'];
+                         await SecureStore.setItemAsync('library', patronsLibrary['libraryId']);
+                         await AsyncStorage.setItem('@libraryId', patronsLibrary['libraryId']);
+                         await SecureStore.setItemAsync('libraryName', patronsLibrary['name']);
+                         await SecureStore.setItemAsync('locationId', patronsLibrary['locationId']);
+                         await AsyncStorage.setItem('@locationId', patronsLibrary['locationId']);
+                         await SecureStore.setItemAsync('solrScope', patronsLibrary['solrScope']);
+                         await AsyncStorage.setItem('@solrScope', patronsLibrary['solrScope']);
+                         await AsyncStorage.setItem('@pathUrl', patronsLibrary['baseUrl']);
                     }
                });
           } else {
+               logDebugMessage('No home location set for user or autoPickUserHomeLocation is disabled, setting library and location to: ' + patronsLibrary['name']);
+               LIBRARY.url = patronsLibrary['baseUrl'];
+               LIBRARY.id = patronsLibrary['libraryId'];
+               updateSelectedLibrary(patronsLibrary);
                await SecureStore.setItemAsync('library', patronsLibrary['libraryId']);
                await AsyncStorage.setItem('@libraryId', patronsLibrary['libraryId']);
                await SecureStore.setItemAsync('libraryName', patronsLibrary['name']);

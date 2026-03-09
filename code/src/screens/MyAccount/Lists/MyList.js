@@ -463,7 +463,7 @@ export const MyList = () => {
      };
 
      return (
-          <SafeAreaView style={{ flex: 1 }}>
+          <Box style={{ flex: 1 }}>
                {_.size(systemMessagesForScreen) > 0 ? <Box safeArea={2}>{showSystemMessage()}</Box> : null}
                {status === 'loading' || isFetching ? (
                     loadingSpinner()
@@ -477,6 +477,6 @@ export const MyList = () => {
                          </Box>
                     </>
                )}
-          </SafeAreaView>
+          </Box>
      );
 };

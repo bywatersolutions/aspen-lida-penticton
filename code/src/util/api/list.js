@@ -37,22 +37,34 @@ export async function getListDetails(id, url) {
 /**
  * Returns all lists for a given user
  * @param {string} url
+ * @param {int} page
+ * @param {int} limit
+ * @param {int} includePagination
  **/
-export async function getLists(url) {
+export async function getLists(url, page= 1, limit = 20, includePagination = 1) {
      const postBody = await postData();
      const api = create({
           baseURL: url + '/API',
           timeout: GLOBALS.timeoutAverage,
           headers: getHeaders(true),
           auth: createAuthTokens(),
+          params: {
+               page,
+               limit,
+               includePagination
+          }
      });
      return await api.post('/ListAPI?method=getUserLists&checkIfValid=false', postBody);
 }
 
 export function formatLists(data) {
      let lists = [];
-     if (!_.isUndefined(data.lists)) {
-          lists = _.sortBy(data.lists, ['title']);
+     if (!_.isUndefined(data)) {
+          if(data.lists) {
+               lists = _.sortBy(data.lists, ['title']);
+          } else {
+               lists = _.sortBy(data, ['title']);
+          }
      }
      PATRON.lists = lists;
      return lists;
@@ -64,8 +76,12 @@ export function formatLists(data) {
  * @param {string} description
  * @param {boolean} isPublic
  * @param {string} url
+ * @param {string} addToListGroup
+ * @param {int} addToListGroupNestedId
+ * @param {string} addToListGroupNewName
+ * @param {int} existingListId
  **/
-export async function createList(title, description, isPublic = false, url) {
+export async function createList(title, description, isPublic = false, url, addToListGroup, addToListGroupNestedId, addToListGroupNewName, existingListId) {
      const postBody = await postData();
      const discovery = create({
           baseURL: url,
@@ -76,9 +92,13 @@ export async function createList(title, description, isPublic = false, url) {
                title,
                description,
                isPublic,
+               addToListGroupOption: addToListGroup,
+               addToListGroupNested: addToListGroupNestedId === '' ? existingListId : addToListGroupNestedId,
+               addToListGroupNewName: addToListGroupNewName,
           },
      });
      const response = await discovery.post(`${endpoint.url}createList`, postBody);
+     console.log(response);
      if (response.ok) {
           if (response.data.result.listId) {
                PATRON.listLastUsed = response.data.result.listId;
@@ -92,7 +112,7 @@ export async function createList(title, description, isPublic = false, url) {
      }
 }
 
-export async function createListFromTitle(title, description, access, items, url, source = 'GroupedWork') {
+export async function createListFromTitle(title, description, access, items, url, source = 'GroupedWork', addToListGroup, addToListGroupNestedId, addToListGroupNewName) {
      const postBody = await postData();
      const api = create({
           baseURL: url + '/API',
@@ -105,6 +125,9 @@ export async function createListFromTitle(title, description, access, items, url
                access,
                source,
                recordIds: items,
+               addToListGroupOption: addToListGroup,
+               addToListGroupNested: addToListGroupNestedId,
+               addToListGroupNewName: addToListGroupNewName,
           },
      });
      const response = await api.post('/ListAPI?method=createList', postBody);
@@ -134,7 +157,7 @@ export async function createListFromTitle(title, description, access, items, url
      }
 }
 
-export async function editList(listId, title, description, access, url) {
+export async function editList(listId, title, description, access, url, listGroupId = null) {
      const postBody = await postData();
      const api = create({
           baseURL: url + '/API',
@@ -146,6 +169,7 @@ export async function editList(listId, title, description, access, url) {
                title,
                description,
                public: access,
+               listGroupId
           },
      });
      const response = await api.post('/ListAPI?method=editList', postBody);
@@ -284,4 +308,126 @@ export async function deleteList(listId, url, optOutOfSoftDeletion = false) {
           popToast(error.title, error.message, 'error');
           logErrorMessage(response);
      }
+}
+
+/**
+ * Returns all list groups for a given user
+ * @param {string} url
+ **/
+export async function getListGroups(url) {
+     const postBody = await postData();
+     const api = create({
+          baseURL: url + '/API',
+          timeout: GLOBALS.timeoutAverage,
+          headers: getHeaders(true),
+          auth: createAuthTokens(),
+     });
+     return await api.post('/ListAPI?method=getUserListGroups', postBody);
+}
+
+/**
+ * Returns details about a given list group
+ * @param {int} listGroupId
+ * @param {string} url
+ * @param {int} page
+ * @param {int} limit
+ * @param {int} includePagination
+ **/
+export async function getListGroupDetails(listGroupId, url, page = 1, limit = 20, includePagination = 1) {
+     const postBody = await postData();
+     const api = create({
+          baseURL: url + '/API',
+          timeout: GLOBALS.timeoutAverage,
+          headers: getHeaders(true),
+          auth: createAuthTokens(),
+          params: {
+               groupId: listGroupId,
+               page,
+               limit,
+               includePagination
+          },
+     });
+     return await api.post('/ListAPI?method=getListGroupDetails', postBody);
+}
+
+/**
+ * Creates a list group for a user
+ * @param {string} title
+ * @param {int} nestedGroupId
+ * @param {string} url
+ **/
+export async function createListGroup(title, nestedGroupId, url) {
+     const postBody = await postData();
+     const api = create({
+          baseURL: url + '/API',
+          timeout: GLOBALS.timeoutAverage,
+          headers: getHeaders(true),
+          auth: createAuthTokens(),
+          params: {
+               title: title,
+               nestedGroupId: nestedGroupId
+          },
+     });
+     return await api.post('/ListAPI?method=createListGroup', postBody);
+}
+
+/**
+ * Deletes the given list group for a user
+ * @param {int} listGroupId
+ * @param {string} url
+ **/
+export async function deleteListGroup(listGroupId, url) {
+     const postBody = await postData();
+     const api = create({
+          baseURL: url + '/API',
+          timeout: GLOBALS.timeoutAverage,
+          headers: getHeaders(true),
+          auth: createAuthTokens(),
+          params: {
+               groupId: listGroupId
+          },
+     });
+     return await api.post('/ListAPI?method=deleteListGroup', postBody);
+}
+
+/**
+ * Edits the title for a given list group
+ * @param {int} listGroupId
+ * @param {string} newTitle
+ * @param {string} url
+ **/
+export async function editListGroup(listGroupId, newTitle, url) {
+     const postBody = await postData();
+     const api = create({
+          baseURL: url + '/API',
+          timeout: GLOBALS.timeoutAverage,
+          headers: getHeaders(true),
+          auth: createAuthTokens(),
+          params: {
+               groupId: listGroupId,
+               listGroupNameNew: newTitle
+          },
+     });
+     return await api.post('/ListAPI?method=editListGroup', postBody);
+}
+
+/**
+ * Edits the parent list group for a given list group
+ * @param {int} listGroupId
+ * @param {int} newParentListGroupId
+ * @param {string} url
+ **/
+export async function editListGroupParent(listGroupId, newParentListGroupId, url) {
+     const postBody = await postData();
+     const api = create({
+          baseURL: url + '/API',
+          timeout: GLOBALS.timeoutAverage,
+          headers: getHeaders(true),
+          auth: createAuthTokens(),
+          params: {
+               groupId: listGroupId,
+               listGroupMove: newParentListGroupId
+          },
+     });
+     return await api.post('/ListAPI?method=editListGroupParent', postBody);
 }

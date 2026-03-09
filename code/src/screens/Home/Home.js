@@ -16,13 +16,14 @@ import { NotificationsOnboard } from '../../components/NotificationsOnboard';
 import { BrowseCategoryContext, LanguageContext, LibrarySystemContext, SearchContext, SystemMessagesContext, ThemeContext, UserContext } from '../../context/initialContext';
 import { navigateStack, pushNavigateStack } from '../../helpers/RootNavigator';
 import { getTermFromDictionary } from '../../translations/TranslationService';
-import { formatBrowseCategories, formatDiscoveryVersion, reloadBrowseCategories } from '../../util/loadLibrary';
+import { formatDiscoveryVersion, getHomeScreenFeed } from '../../util/loadLibrary';
 import { updateBrowseCategoryStatus } from '../../util/loadPatron';
 import { getDefaultFacets, getSearchIndexes, getSearchSources } from '../../util/search';
 import DisplayBrowseCategory from './Category';
 import { getErrorMessage } from '../../util/apiAuth';
 import { DisplayErrorAlertDialog } from '../../components/loadError';
 import { logDebugMessage, logErrorMessage, logInfoMessage } from '../../util/logging';
+import HomeScreenLinkGrid from './Link';
 
 const blurhash = 'MHPZ}tt7*0WC5S-;ayWBofj[K5RjM{ofM_';
 
@@ -38,7 +39,7 @@ export const DiscoverHomeScreen = () => {
      const { systemMessages, updateSystemMessages } = React.useContext(SystemMessagesContext);
      const { updateIndexes, updateSources, updateCurrentIndex, updateCurrentSource } = React.useContext(SearchContext);
      const { notificationOnboard } = React.useContext(UserContext);
-     const { library } = React.useContext(LibrarySystemContext);
+     const { library, homeScreenLinks } = React.useContext(LibrarySystemContext);
      const { category, updateMaxCategories, maxNum, updateBrowseCategories } = React.useContext(BrowseCategoryContext);
      const { language } = React.useContext(LanguageContext);
 
@@ -111,185 +112,6 @@ export const DiscoverHomeScreen = () => {
           navigateStack('BrowseTab', 'Scanner');
      };
 
-     const renderHeader = (title, key, user, url) => {
-          return (
-               <Box>
-                    <HStack space="$3" alignItems="center" justifyContent="space-between" pb="$2">
-                         <Text
-                              maxWidth="80%"
-                              bold
-                              mb="$1"
-                              $dark-color="$textLight50"
-                              sx={{
-                                   '@base': {
-                                        fontSize: 16,
-                                   },
-                                   '@lg': {
-                                        fontSize: 22,
-                                   },
-                              }}>
-                              {title}
-                         </Text>
-                         <Button size="xs" variant="link" onPress={() => onHideCategory(url, key)}>
-                              <ButtonIcon as={XIcon} color={textColor} mr="$1" />
-                              <ButtonText fontWeight="$medium" sx={{ color: textColor }}>
-                                   {getTermFromDictionary(language, 'hide')}
-                              </ButtonText>
-                         </Button>
-                    </HStack>
-               </Box>
-          );
-     };
-
-     const renderRecord = (data, url, version, index) => {
-          const item = data.item;
-          let id = item.key ?? item.id;
-
-          let type = 'grouped_work';
-          if (!_.isUndefined(item.source)) {
-               if (item.source === 'library_calendar' || item.source === 'springshare_libcal' || item.source === 'communico' || item.source === 'assabet') {
-                    type = 'Event';
-               } else {
-                    type = item.source;
-               }
-          }
-
-          if (!_.isUndefined(item.recordtype)) {
-               type = item.recordtype;
-          }
-
-          if (type === 'Event') {
-               if (_.includes(id, 'lc_')) {
-                    type = 'library_calendar_event';
-               }
-               if (_.includes(id, 'libcal_')) {
-                    type = 'springshare_libcal_event';
-               }
-               if (_.includes(id, 'communico_')) {
-                    type = 'communico_event';
-               }
-               if (_.includes(id, 'assabet_')) {
-                    type = 'assabet_event';
-               }
-               if (_.includes(id, 'aspenEvent_')) {
-                    type = 'aspenEvent_event';
-               }
-          }
-
-          if(type !== 'aspenEvent_event') {
-               type = type.toLowerCase();
-          }
-
-          const imageUrl = library.baseUrl + '/bookcover.php?id=' + id + '&size=medium&type=' + type;
-
-          let isNew = false;
-          if (typeof item.isNew !== 'undefined') {
-               isNew = item.isNew;
-          }
-
-          const key = 'medium_' + id;
-
-          return (
-               <Pressable
-                    ml="$1"
-                    mr="$3"
-                    onPress={() => onPressItem(id, type, item.title_display, version)}
-                    sx={{
-                         '@base': {
-                              width: 100,
-                              height: 150,
-                         },
-                         '@lg': {
-                              width: 180,
-                              height: 250,
-                         },
-                    }}>
-                    <Image
-                         alt={item.title_display}
-                         source={imageUrl}
-                         style={{
-                              width: '100%',
-                              height: '100%',
-                              borderRadius: 4,
-                         }}
-                         placeholder={blurhash}
-                         transition={1000}
-                         contentFit="cover"
-                    />
-                    {isNew ? (
-                         <Box zIndex={1} alignItems="center">
-                              <Badge bgColor={theme['colors']['warning']['500']} mx={5} mt={-8}>
-                                   <BadgeText bold color={theme['colors']['white']} textTransform="none">
-                                        {getTermFromDictionary(language, 'flag_new')}
-                                   </BadgeText>
-                              </Badge>
-                         </Box>
-                    ) : null}
-               </Pressable>
-          );
-     };
-
-     const onPressItem = (key, type, title, version) => {
-          if (type === 'List' || type === 'list') {
-               navigateStack('BrowseTab', 'SearchByList', {
-                    id: key,
-                    title: title,
-                    prevRoute: 'HomeScreen',
-               });
-          } else if (type === 'SavedSearch') {
-               navigateStack('BrowseTab', 'SearchBySavedSearch', {
-                    id: key,
-                    title: title,
-                    prevRoute: 'HomeScreen',
-               });
-          } else if (type === 'Event' || _.includes(type, '_event')) {
-               let eventSource = 'unknown';
-               if (type === 'communico_event') {
-                    eventSource = 'communico';
-               } else if (type === 'library_calendar_event') {
-                    eventSource = 'library_calendar';
-               } else if (type === 'springshare_libcal_event') {
-                    eventSource = 'springshare';
-               } else if (type === 'assabet_event') {
-                    eventSource = 'assabet';
-               } else if (type === 'aspenEvent_event') {
-                    eventSource = 'aspenEvents';
-               }
-
-               navigateStack('BrowseTab', 'EventScreen', {
-                    id: key,
-                    title: title,
-                    source: eventSource,
-                    prevRoute: 'HomeScreen',
-               });
-          } else {
-               navigateStack('BrowseTab', 'GroupedWorkScreen', {
-                    id: key,
-                    title: title,
-                    prevRoute: 'HomeScreen',
-               });
-          }
-     };
-
-     const renderLoadMore = () => {};
-
-     const onHideCategory = async (url, category) => {
-          setLoading(true);
-          await updateBrowseCategoryStatus(category, url).then(async (response) => {
-               if (!response.ok) {
-                    const error = getErrorMessage({ statusCode: response.status, problem: response.problem});
-                    setErrorTitle(error.title);
-                    setErrorMessage(error.message);
-                    logErrorMessage(response);
-                    setShowErrorDialog(true);
-               } else {
-                    await queryClient.invalidateQueries({ queryKey: ['browse_categories', library.baseUrl, language, maxNum] });
-                    await queryClient.invalidateQueries({ queryKey: ['browse_categories_list', library.baseUrl, language] });
-               }
-          });
-          setLoading(false);
-     };
-
      const onRefreshCategories = async () => {
           setLoading(true);
           await queryClient.invalidateQueries({ queryKey: ['browse_categories', library.baseUrl, language, maxNum] });
@@ -300,12 +122,12 @@ export const DiscoverHomeScreen = () => {
      const onLoadAllCategories = async () => {
           updateMaxCategories(9999);
           setLoading(true);
-          await reloadBrowseCategories(9999, library.baseUrl).then((response) => {
+          await getHomeScreenFeed(9999, library.baseUrl).then((response) => {
                if(response.ok) {
-                    const categories = formatBrowseCategories(response.data.result);
-                    updateBrowseCategories(categories);
-                    queryClient.setQueryData(['browse_categories', library.baseUrl, language, maxNum], categories);
-                    queryClient.setQueryData(['browse_categories', library.baseUrl, language, 9999], categories);
+                    const result = response.data.result;
+                    updateBrowseCategories(result.browseCategories);
+                    queryClient.setQueryData(['browse_categories', library.baseUrl, language, maxNum], result);
+                    queryClient.setQueryData(['browse_categories', library.baseUrl, language, 9999], result);
                } else {
                     logDebugMessage("Error fetching browse categories");
                     logDebugMessage(response);
@@ -317,20 +139,6 @@ export const DiscoverHomeScreen = () => {
 
      const onPressSettings = () => {
           navigateStack('MoreTab', 'MyPreferences_ManageBrowseCategories', { prevRoute: 'HomeScreen' });
-     };
-
-     const handleOnPressCategory = (label, key, source) => {
-          let screen = 'SearchByCategory';
-          if (source === 'List') {
-               screen = 'SearchByList';
-          } else if (source === 'SavedSearch') {
-               screen = 'SearchBySavedSearch';
-          }
-
-          navigateStack('BrowseTab', screen, {
-               title: label,
-               id: key,
-          });
      };
 
      const showSystemMessage = () => {
@@ -389,8 +197,11 @@ export const DiscoverHomeScreen = () => {
                               </InputSlot>
                          </Input>
                     </FormControl>
+                    {homeScreenLinks && homeScreenLinks.length > 0 ? (
+                         <HomeScreenLinkGrid links={homeScreenLinks} />
+                    ) : null}
                     {category.map((item, index) => {
-                         return <DisplayBrowseCategory textColor={textColor} language={language} key={index} categoryLabel={item.title} categoryKey={item.key} id={item.id} records={item.records} isHidden={item.isHidden} categorySource={item.source} renderRecords={renderRecord} header={renderHeader} hideCategory={onHideCategory} libraryUrl={library.baseUrl} loadMore={renderLoadMore} discoveryVersion={library.version} onPressCategory={handleOnPressCategory} categoryList={category} />;
+                         return <DisplayBrowseCategory category={item} />;
                     })}
                     <ButtonOptions language={language} onPressSettings={onPressSettings} onRefreshCategories={onRefreshCategories} discoveryVersion={library.discoveryVersion} maxNum={maxNum} onLoadAllCategories={onLoadAllCategories} />
                     {showErrorDialog && (

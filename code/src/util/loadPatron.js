@@ -69,14 +69,14 @@ export async function getBrowseCategoryListForUser(url = null) {
      return await discovery.post('/API/SearchAPI?method=getBrowseCategoryListForUser', postBody);
 }
 
-export async function updateBrowseCategoryStatus(id, url = null) {
+export async function updateBrowseCategoryStatus(id, url = null, hide = 'single') {
      const postBody = await postData();
      let baseUrl = url ?? LIBRARY.url;
      const discovery = create({
           baseURL: baseUrl,
           timeout: GLOBALS.timeoutFast,
           headers: getHeaders(true),
-          params: { browseCategoryId: id },
+          params: { browseCategoryId: id, hide },
           auth: createAuthTokens(),
      });
      return await discovery.post('/API/UserAPI?method=updateBrowseCategoryStatus', postBody);

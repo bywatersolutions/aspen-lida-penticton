@@ -1,0 +1,178 @@
+import { Box, Pressable, VStack, Text } from '@gluestack-ui/themed';
+import React from 'react';
+import { useNavigation } from '@react-navigation/native';
+import { Dimensions } from 'react-native';
+
+import { LanguageContext, LibrarySystemContext, SearchContext, ThemeContext } from '../../context/initialContext';
+import { Image } from 'expo-image';
+import { MaterialIcons } from '@expo/vector-icons';
+import { logErrorMessage } from '../../util/logging';
+import * as WebBrowser from 'expo-web-browser';
+import { popAlert } from '../../components/loadError';
+import { getTermFromDictionary } from '../../translations/TranslationService';
+
+const HomeScreenLinkGrid = ({links}) => {
+     const { width } = Dimensions.get('window');
+     const isTablet = width >= 768; // Consider tablet if width >= 768px
+     const columnsPerRow = isTablet ? 4 : 2;
+     const itemWidth = `${100 / columnsPerRow}%`;
+
+     return (
+          <Box flexDirection="row" flexWrap="wrap">
+               {links.map((item, index) => {
+                    // Check if this is the last item and if it would be alone in its row
+                    const isLastItem = index === links.length - 1;
+                    const itemsInLastRow = links.length % columnsPerRow;
+                    const isAloneInLastRow = isLastItem && itemsInLastRow === 1;
+
+                    // Use 100% width if it's alone in the last row, otherwise use calculated width
+                    const width = isAloneInLastRow ? "100%" : itemWidth;
+
+                    return (
+                         <Box
+                              key={item.id || index}
+                              width={width}
+                              alignItems="center"
+                              marginBottom={16}
+                              paddingHorizontal="$2"
+                         >
+                              <Link link={item} />
+                         </Box>
+                    );
+               })}
+          </Box>
+     );
+}
+
+const Link = ({link}) => {
+     const { theme, textColor, colorMode } = React.useContext(ThemeContext);
+     const { library } = React.useContext(LibrarySystemContext);
+     const { language } = React.useContext(LanguageContext);
+     const { updateCurrentIndex } = React.useContext(SearchContext);
+
+     const navigation = useNavigation();
+
+     const handleOpenLink = () => {
+          // Open external link in web browser based on link.linkUrl
+          try {
+               if (link?.linkUrl) {
+                    WebBrowser.openBrowserAsync(link.linkUrl).catch((err) => {
+                         logErrorMessage('Failed to open browser: ' + err);
+                    });
+               }
+          } catch (e) {
+               logErrorMessage('Error opening link: ' + e);
+               popAlert(getTermFromDictionary(language, 'error'), getTermFromDictionary(language, 'error_no_open_resource'), 'error');
+          }
+     }
+
+     const handleOpenScreen = () => {
+          // Navigate to internal screen based on link.deepLinkPath
+          if (!link?.deepLinkPath) return;
+          const segments = link.deepLinkPath.split('/');
+
+          console.log(link);
+
+          try {
+               // Map deep link paths to actual navigation structure
+               switch (segments[0]) {
+                    case 'home':
+                         navigation.navigate('BrowseTab', { screen: 'HomeScreen' });
+                         break;
+                    case 'user':
+                         if (segments[1]) {
+                              // Handle specific user screens like user/holds, user/checkouts, etc.
+                              const userScreenMap = {
+                                   'holds': 'MyHolds',
+                                   'checkouts': 'MyCheckouts',
+                                   'lists': 'MyLists',
+                                   'saved_searches': 'MySavedSearches',
+                                   'preferences': 'MyPreferences',
+                                   'reading_history': 'MyReadingHistory',
+                                   'linked_accounts': 'MyLinkedAccounts',
+                                   'campaigns': 'MyCampaigns',
+                                   'library_card': 'LibraryCard'
+                              };
+
+                              if (segments[1] === 'library_card') {
+                                   navigation.navigate('LibraryCardTab', { screen: 'LibraryCard' });
+                              } else if (userScreenMap[segments[1]]) {
+                                   navigation.navigate('AccountScreenTab', { screen: userScreenMap[segments[1]] });
+                              } else {
+                                   // Default to user profile
+                                   navigation.navigate('AccountScreenTab', { screen: 'MyProfile' });
+                              }
+                         } else {
+                              // Navigate to user profile
+                              navigation.navigate('AccountScreenTab', { screen: 'MyProfile' });
+                         }
+                         break;
+                    case 'search':
+                         if (segments[1]) {
+                              const searchScreenMap = {
+                                   browse_category: 'SearchByCategory',
+                                   author: 'SearchByAuthor',
+                                   list: 'SearchByList',
+                                   grouped_work: 'GroupedWorkScreen',
+                                   search: 'SearchResults',
+                              };
+
+                              if (searchScreenMap[segments[1]]) {
+                                   if(segments[1] === 'browse_category' || segments[1] === 'list' || segments[1] === 'grouped_work') {
+                                        console.log(searchScreenMap[segments[1]]);
+                                        navigation.navigate('BrowseTab', {
+                                             screen: searchScreenMap[segments[1]],
+                                             params: link.deepLinkId ? { id: link.deepLinkId, title: link.title } : {},
+                                        });
+                                   } else if(segments[1] === 'author') {
+                                        updateCurrentIndex('Author');
+                                        navigation.navigate('BrowseTab', {
+                                             screen: 'SearchResults',
+                                             params: link.deepLinkId ? { term: link.deepLinkId, title: link.deepLinkId } : {},
+                                        });
+
+                                   }
+                              }
+                         } else {
+                              navigation.navigate('BrowseTab', { screen: 'SearchResults', params: link.deepLinkId ? { term: link.deepLinkId, title: link.deepLinkId } : {} });
+                         }
+                         break;
+                    default:
+                         // Fallback to home screen
+                         navigation.navigate('BrowseTab', { screen: 'HomeScreen' });
+                         break;
+               }
+          } catch (e) {
+               logErrorMessage('Navigation error: ' + e.message);
+               popAlert(getTermFromDictionary(language, 'error'), getTermFromDictionary(language, 'error_no_open_resource'), 'error');
+          }
+     }
+
+     const imgSource = link?.typeOfIcon === 'uploadIcon' && link?.uploadIcon ? library.baseUrl + '/files/original/' + link.uploadIcon : null;
+
+     return (
+          <Pressable onPress={(link?.linkType !== 'deepLink') ? handleOpenLink : handleOpenScreen} alignItems="center" justifyContent="center" padding="$2" width="100%" borderRadius="$lg" backgroundColor={colorMode === 'light' ? theme['colors']['coolGray']['200'] : theme['colors']['coolGray']['700']}>
+               <VStack alignItems="center" justifyContent="center" minHeight={100}>
+                    {link?.typeOfIcon === 'uploadIcon' && imgSource ? (
+                         <Image
+                              source={{ uri: imgSource }}
+                              style={{ width: 52, height: 52, marginBottom: 8 }}
+                              contentFit="contain"
+                         />
+                    ) : (
+                         <MaterialIcons
+                              name={link?.materialIcon?.replace(/_/g, '-') || 'link'}
+                              size={52}
+                              color={textColor}
+                              style={{ marginBottom: 8 }}
+                         />
+                    )}
+                    <Box paddingHorizontal="$2">
+                         <Text bold color={textColor} fontSize="$sm" textAlign="center">{link?.title}</Text>
+                    </Box>
+               </VStack>
+          </Pressable>
+     );
+}
+
+export default HomeScreenLinkGrid;

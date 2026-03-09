@@ -179,186 +179,35 @@ export async function getLocalIllForm(url, id) {
      const response = await api.post('/SystemAPI?method=getLocalIllForm', postBody);
      if (response.ok) {
           LIBRARY.localIll = response.data.result;
-          return response.data.result;
-     } else {
-          const error = getErrorMessage({ statusCode: response.status, problem: response.problem, sendToSentry: true });
-          popToast(error.title, error.message, 'error');
-          logDebugMessage(response);
      }
+     return response;
 }
 
 export function formatDiscoveryVersion(payload) {
-     if(LIBRARY.version) {
-          return LIBRARY.version;
+     if (payload === undefined) {
+          // skip trying to parse the version if it is undefined
+          logWarnMessage('Could not load discovery version, the version was undefined. Something is wrong.');
+          return LIBRARY.version ?? 'Unknown';
      }
      try {
-          if (payload === undefined) {
-               logWarnMessage("Could not load discovery version, the version was undefined.");
-               LIBRARY.version = 'unknown';
-               return 'unknown';
-          }else{
-               const result = payload.split(' ');
-               if (_.isObject(result)) {
+          const result = payload.split(' ');
+          if (_.isObject(result)) {
+               if (LIBRARY.version !== result[0]) {
+                    logInfoMessage('Updated LIBRARY.version to ' + result[0]);
                     LIBRARY.version = result[0];
                     return result[0];
                }
           }
-
      } catch (e) {
-          logErrorMessage(e)
+          logErrorMessage(e);
      }
-     return payload;
+     return LIBRARY.version ?? 'Unknown'; // if we couldn't parse the version (??), return the currently stored version or unknown
 }
 
-export function formatBrowseCategories(payload) {
-     const categories = [];
-     if (!_.isUndefined(payload)) {
-          payload.map(function (category, index, array) {
-               const subCategories = category['subCategories'] ?? [];
-               const manyLists = category['lists'] ?? [];
-               const records = category['records'] ?? [];
-               const allEvents = category['events'] ?? [];
-               const lists = [];
-               const events = [];
-               if (!_.isEmpty(subCategories) && subCategories.length > 0) {
-                    subCategories.forEach((item) =>
-                         categories.push({
-                              key: item.key,
-                              title: item.title,
-                              source: item.source,
-                              records: item.records,
-                              isHidden: item.isHidden ?? false,
-                         })
-                    );
-               } else {
-                    if (!_.isEmpty(subCategories) || !_.isEmpty(manyLists) || !_.isEmpty(records) || !_.isEmpty(allEvents)) {
-                         if (!_.isEmpty(subCategories) && subCategories.length > 0) {
-                              subCategories.forEach((item) =>
-                                   categories.push({
-                                        key: item.key,
-                                        title: item.title,
-                                        source: item.source,
-                                        records: item.records,
-                                        isHidden: item.isHidden ?? false,
-                                   })
-                              );
-                         } else {
-                              if (!_.isEmpty(manyLists)) {
-                                   manyLists.forEach((item) =>
-                                        lists.push({
-                                             id: item.sourceId,
-                                             categoryId: category.key,
-                                             source: 'List',
-                                             title_display: item.title,
-                                             isHidden: category.isHidden ?? false,
-                                        })
-                                   );
-                              }
-
-                              if (!_.isEmpty(allEvents)) {
-                                   allEvents.forEach((item) =>
-                                        events.push({
-                                             id: item.sourceId ?? item.id,
-                                             categoryId: category.key,
-                                             source: 'Event',
-                                             title_display: item.title ?? item.title_display,
-                                             isHidden: category.isHidden ?? false,
-                                        })
-                                   );
-                              }
-
-                              let id = category.key;
-                              const categoryId = category.key;
-                              if (lists.length !== 0) {
-                                   if (!_.isUndefined(category.listId)) {
-                                        id = category.listId;
-                                   }
-
-                                   let numNewTitles = 0;
-                                   if (!_.isUndefined(category.numNewTitles)) {
-                                        numNewTitles = category.numNewTitles;
-                                   }
-                                   categories.push({
-                                        key: id,
-                                        title: category.title,
-                                        source: category.source,
-                                        numNewTitles,
-                                        records: lists,
-                                        id: categoryId,
-                                        isHidden: category.isHidden ?? false,
-                                   });
-                              }
-
-                              if (events.length !== 0) {
-                                   if (!_.isUndefined(category.listId)) {
-                                        id = category.listId;
-                                   }
-
-                                   let numNewTitles = 0;
-                                   if (!_.isUndefined(category.numNewTitles)) {
-                                        numNewTitles = category.numNewTitles;
-                                   }
-
-                                   categories.push({
-                                        key: id,
-                                        title: category.title,
-                                        source: category.source,
-                                        numNewTitles: numNewTitles,
-                                        records: events,
-                                        isHidden: category.isHidden ?? false,
-                                        id: categoryId,
-                                   });
-                              }
-
-                              if (records.length !== 0) {
-                                   if (!_.isUndefined(category.listId) && !_.isNull(category.listId)) {
-                                        id = category.listId;
-                                   }
-
-                                   if (!_.isUndefined(category.sourceId) && !_.isNull(category.sourceId) && category.sourceId !== '' && category.sourceId !== -1 && category.sourceId !== '-1') {
-                                        id = category.sourceId;
-                                   }
-
-                                   let numNewTitles = 0;
-                                   if (!_.isUndefined(category.numNewTitles)) {
-                                        numNewTitles = category.numNewTitles;
-                                   }
-
-                                   if (_.find(categories, ['id', categoryId])) {
-                                        let thisCategory = _.find(categories, ['id', categoryId]);
-                                        let allRecords = category.records;
-                                        let allFormattedRecords = [];
-                                        allRecords.forEach((item) =>
-                                             allFormattedRecords.push({
-                                                  id: item.id,
-                                                  categoryId: category.key,
-                                                  source: 'grouped_work',
-                                                  title_display: item.title,
-                                             })
-                                        );
-                                        thisCategory.records = _.concat(thisCategory.records, allFormattedRecords);
-                                        _.merge(categories, thisCategory);
-                                   } else {
-                                        categories.push({
-                                             key: id,
-                                             title: category.title,
-                                             source: category.source,
-                                             numNewTitles,
-                                             records: category.records,
-                                             isHidden: category.isHidden ?? false,
-                                             id: categoryId,
-                                        });
-                                   }
-                              }
-                         }
-                    }
-               }
-          });
-     }
-     return categories;
-}
-
-export async function reloadBrowseCategories(maxCat, url = null) {
+/**
+ * Fetch home screen feed items for the library
+ **/
+export async function getHomeScreenFeed(maxCat = 5, url = null) {
      let maxCategories = maxCat ?? 5;
      const postBody = await postData();
      let discovery;
@@ -385,5 +234,5 @@ export async function reloadBrowseCategories(maxCat, url = null) {
                },
           });
      }
-     return await discovery.post('/SearchAPI?method=getAppActiveBrowseCategories&includeSubCategories=true', postBody);
+     return await discovery.post('/SearchAPI?method=getHomeScreenFeed', postBody);
 }

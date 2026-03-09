@@ -46,14 +46,14 @@ import {
 import { getTermFromDictionary } from '../../translations/TranslationService';
 import { createAuthTokens, getErrorMessage, getHeaders } from '../../util/apiAuth';
 import { GLOBALS } from '../../util/globals';
-import { getBrowseCategories, getLibraryBranch, getLibrarySystem, getUserProfile } from '../../util/login';
+import { getBrowseCategories, getBrowseCategoriesAndHomeLinks, getLibraryBranch, getLibrarySystem, getUserProfile } from '../../util/login';
 import { logDebugMessage, logInfoMessage } from '../../util/logging';
 
 export const ResetExpiredPin = (props) => {
      const [resetSuccessful, setResetSuccessful] = React.useState(false);
      const [resetMessage, setResetMessage] = React.useState('');
      const { signIn } = React.useContext(AuthContext);
-     const { updateLibrary } = React.useContext(LibrarySystemContext);
+     const { updateLibrary, updateHomeScreenLinks } = React.useContext(LibrarySystemContext);
      const { updateLocation } = React.useContext(LibraryBranchContext);
      const { updateUser } = React.useContext(UserContext);
      const { theme, colorMode, textColor } = React.useContext(ThemeContext);
@@ -155,8 +155,9 @@ export const ResetExpiredPin = (props) => {
           updateLocation(location);
           const user = await getUserProfile({ patronsLibrary }, { valueUser }, { valueSecret });
           updateUser(user);
-          const categories = await getBrowseCategories({ patronsLibrary }, { valueUser }, { valueSecret });
-          updateBrowseCategories(categories);
+          const homeScreenFeed = await getBrowseCategoriesAndHomeLinks({ patronsLibrary }, { valueUser }, { valueSecret });
+          updateBrowseCategories(homeScreenFeed.browseCategories);
+          updateHomeScreenLinks(homeScreenFeed.homeScreenLinks);
      };
 
      const setAsyncStorage = async () => {

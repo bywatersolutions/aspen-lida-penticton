@@ -134,7 +134,7 @@ export const ResetPassword = (props) => {
      return (
           <Center>
                <Button variant="link" onPress={() => setShowForgotPasswordModal(true)}>
-                    <ButtonText color={theme['colors']['primary']['500']}>{buttonLabel}</ButtonText>
+                    <ButtonText style={ buttonLabel.length > 80 ? {fontSize: 12} : undefined} color={theme['colors']['primary']['500']}>{buttonLabel}</ButtonText>
                </Button>
                <Modal isOpen={showForgotPasswordModal} size="lg" avoidKeyboard={true} onClose={() => setShowForgotPasswordModal(false)}>
                     <ModalBackdrop />

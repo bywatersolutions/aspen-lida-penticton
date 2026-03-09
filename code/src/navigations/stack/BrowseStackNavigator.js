@@ -9,7 +9,7 @@ import TitleWithLogo from '../../components/TitleWithLogo'
 import { LanguageContext, LibrarySystemContext, ThemeContext } from '../../context/initialContext';
 import { navigate } from '../../helpers/RootNavigator';
 
-import { DiscoverHomeScreen } from '../../screens/BrowseCategory/Home';
+import { DiscoverHomeScreen } from '../../screens/Home/Home';
 import { EventScreen } from '../../screens/Event/Event';
 import { CreateVDXRequest } from '../../screens/GroupedWork/CreateVDXRequest';
 import { CreateLocalIllRequest } from '../../screens/GroupedWork/CreateLocalIllRequest';

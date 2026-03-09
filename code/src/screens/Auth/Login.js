@@ -28,7 +28,7 @@ import { createGlueTheme } from '../../themes/theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { logDebugMessage } from '../../util/logging';
+import { logDebugMessage, logInfoMessage } from '../../util/logging';
 import { getErrorMessage } from '../../util/apiAuth';
 
 export const LoginScreen = () => {
@@ -87,6 +87,7 @@ export const LoginScreen = () => {
                               setLibraries(result.libraries);
                               setShowShouldSelectLibrary(result.shouldShowSelectLibrary);
                               if (!result.shouldShowSelectLibrary) {
+                                   logInfoMessage('Automatically selecting library ' + result.libraries[0].displayName + ' based on geolocation');
                                    updateSelectedLibrary(result.libraries[0]);
                               }
                          }
@@ -127,52 +128,65 @@ export const LoginScreen = () => {
      );
 
      const updateSelectedLibrary = async (data) => {
+          logDebugMessage('Selected new library on Login screen: ' + data.displayName + ' (' + data.libraryId + ')');
           setSelectedLibrary(data);
           LIBRARY.url = data.baseUrl; // used in some cases before library context is set
           await getLibraryInfo(data.baseUrl, data.libraryId).then(async (result) => {
                if (_.isObject(result)) {
                     const library = result.data.result?.library ?? [];
-                    logDebugMessage("Updating library from Login screen");
+                    logDebugMessage("Updating library context on Login screen to: " + library.displayName + ' (' + library.libraryId + ')');
                     updateLibrary(library);
+                    logInfoMessage('Base Url is now: ' + library.baseUrl + ', library is: ' + library.libraryId);
                     if (library.barcodeStyle) {
                          setAllowBarcodeScanner(true);
                          if (library.barcodeStyle === 'CODE39') {
                               setAllowCode39(true);
                          }
+                         logInfoMessage("Enabling barcode scanner at login with style " + library.barcodeStyle);
                     } else {
+                         logInfoMessage('Barcode scanning at login is not enabled since no barcode style is set in library system settings');
                          setAllowBarcodeScanner(false);
                     }
 
                     if (library.usernameLabel) {
+                         logDebugMessage('Setting username label to ' + library.usernameLabel);
                          setUsernameLabel(library.usernameLabel);
                     }
 
                     if (library.passwordLabel) {
+                         logDebugMessage('Setting password label to ' + library.passwordLabel);
                          setPasswordLabel(library.passwordLabel);
                     }
 
                     if (library.enableForgotPasswordLink) {
+                         logInfoMessage('Forgot password enabled');
                          setEnableForgotPasswordLink(library.enableForgotPasswordLink);
                     }
 
                     if (library.enableForgotBarcode) {
+                         logInfoMessage('Forgot barcode enabled');
                          setEnableForgotBarcode(library.enableForgotBarcode);
                     }
 
                     if (library.forgotPasswordType) {
+                         logInfoMessage('Forgot password type set to ' + library.forgotPasswordType);
                          setForgotPasswordType(library.forgotPasswordType);
                     }
 
                     if (library.ils) {
+                         logInfoMessage('Setting ILS to ' + library.ils);
                          setIls(library.ils);
                     }
 
                     if (library.catalogRegistrationCapabilities) {
-                              if(String(library.catalogRegistrationCapabilities.enableSelfRegistration) === '1' && String(library.catalogRegistrationCapabilities.enableSelfRegistrationInApp) === '1') {
-                                   setEnableSelfRegistration(1);
-                              } else {
-                                   setEnableSelfRegistration(0);
-                              }
+                         if(String(library.catalogRegistrationCapabilities.enableSelfRegistration) === '1' && String(library.catalogRegistrationCapabilities.enableSelfRegistrationInApp) === '1') {
+                              logInfoMessage('Enabling self registration');
+                              setEnableSelfRegistration(1);
+                         } else {
+                              setEnableSelfRegistration(0);
+                         }
+                         //even if the url isn't set this will just be an empty string
+                         setSelfRegistrationURL(library.catalogRegistrationCapabilities.selfRegistrationUrl);
                     }
                }
           });
@@ -199,7 +213,7 @@ export const LoginScreen = () => {
                <Image source={{ uri: logoImage }} rounded={25} size="xl" alt="" fallbackSource={require('../../themes/default/aspenLogo.png')} />
                {isCommunity || shouldShowSelectLibrary ? <SelectYourLibrary updateSelectedLibrary={updateSelectedLibrary} selectedLibrary={selectedLibrary} query={query} setQuery={setQuery} showModal={showModal} setShowModal={setShowModal} isCommunity={isCommunity} setShouldRequestPermissions={setShouldRequestPermissions} shouldRequestPermissions={shouldRequestPermissions} permissionRequested={permissionRequested} libraries={libraries} allLibraries={allLibraries} /> : null}
                <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'padding'} width="100%">
-                    {selectedLibrary ? <GetLoginForm selectedLibrary={selectedLibrary} usernameLabel={usernameLabel} passwordLabel={passwordLabel} allowBarcodeScanner={allowBarcodeScanner} allowCode39={allowCode39} /> : null}
+                    {selectedLibrary ? <GetLoginForm selectedLibrary={selectedLibrary} usernameLabel={usernameLabel} passwordLabel={passwordLabel} allowBarcodeScanner={allowBarcodeScanner} allowCode39={allowCode39} updateSelectedLibrary={updateSelectedLibrary} /> : null}
                     <ButtonGroup space="$1" justifyContent="center" pt="$5" flexWrap="wrap">
                          {enableForgotPasswordLink === '1' || enableForgotPasswordLink === 1 ? <ResetPassword ils={ils} enableForgotPasswordLink={enableForgotPasswordLink} usernameLabel={usernameLabel} passwordLabel={passwordLabel} forgotPasswordType={forgotPasswordType} showForgotPasswordModal={showForgotPasswordModal} setShowForgotPasswordModal={setShowForgotPasswordModal} /> : null}
                          {enableForgotBarcode === '1' || enableForgotBarcode === 1 ? <ForgotBarcode usernameLabel={usernameLabel} showForgotBarcodeModal={showForgotBarcodeModal} setShowForgotBarcodeModal={setShowForgotBarcodeModal} /> : null}

@@ -216,8 +216,8 @@ export const MyReadingHistory = () => {
      const updatePage = async (value) => {
           logDebugMessage('updatePage for reading history: ' + value);
           setLoading(true);
-          setPage(value);
           //await queryClient.invalidateQueries({ queryKey: ['reading_history', user.id, library.baseUrl, page, sort, searchTerm] });
+          setPage(value);
           await queryClient.refetchQueries({ queryKey: ['reading_history', user.id, library.baseUrl, value, sort, searchTerm] });
      };
 
@@ -450,11 +450,14 @@ export const MyReadingHistory = () => {
                          alignItems="center">
                          <ScrollView horizontal>
                               <ButtonGroup size="sm">
-                                   <Button bgColor={theme['colors']['primary']['500']} onPress={async () => {
-                                                                                                         if (page > 1) {
-                                                                                                              updatePage(page - 1)
-                                                                                                         }
-                                                                                                    }} isDisabled={page === 1}>
+                                   <Button
+                                        bgColor={theme['colors']['primary']['500']}
+                                        onPress={async () => {
+                                            if (page > 1) {
+                                                 updatePage(page - 1)
+                                            }
+                                        }}
+                                        isDisabled={page === 1}>
                                         <ButtonText color={theme['colors']['primary']['500-text']} >{getTermFromDictionary(language, 'previous')}</ButtonText>
                                    </Button>
                                    <Button
@@ -476,7 +479,7 @@ export const MyReadingHistory = () => {
                          </Text>
                     </Box>
                );
-          } else {
+          }else{
                return null;
           }
      };
@@ -635,6 +638,6 @@ const Item = (data) => {
      }else{
           return (
                <Text>Unknown title</Text>
-          );
+         );
      }
 };
