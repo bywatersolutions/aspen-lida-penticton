@@ -1,0 +1,15 @@
+{
+  "name": "Penticton Public Library",
+  "slug": "penticton",
+  "easId": "70109b3d-a29a-4cd1-8ae7-7174072582c3",
+  "reverseDns": "org.aspendiscovery.penticton",
+  "discoveryUrl": "https://search.pentictonlibrary.ca/",
+  "greenhouseUrl": "https://search.pentictonlibrary.ca/",
+  "libraryId": "2",
+  "themeId": "1",
+  "background": "#ffffff",
+  "sentryProject": "aspen-lida-penticton",
+  "sentryDsn": "https://3ba5632bb98c526b3879408326792fa4@o994439.ingest.us.sentry.io/4507963873886208",
+  "ascAppId": "6692606867",
+  "logLevel": "0"
+}
