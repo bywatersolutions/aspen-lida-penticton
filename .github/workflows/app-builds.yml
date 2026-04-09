@@ -105,11 +105,6 @@ jobs:
       - name: Get origiating IP
         run: curl ipinfo.io
 
-      - name: Debug CF token
-        run: 'echo "Token starts with: ${CF_BYPASS_TOKEN:0:4} length: ${#CF_BYPASS_TOKEN}"'
-        env:
-          CF_BYPASS_TOKEN: ${{ secrets.CF_BYPASS_TOKEN }}
-
       - name: 🏗  Checkout repository
         uses: actions/checkout@v4
         with:
@@ -191,21 +186,6 @@ jobs:
             exit 1
           fi
         working-directory: ./code
-
-      - name: 🔍 Test curl bypass directly
-        run: |
-          echo "=== Test 1: Using .curlrc ==="
-          curl -L --fail -o /dev/null -w "curlrc status: %{http_code}\n" "https://search.pentictonlibrary.ca/API/SystemAPI?method=getLogoFile&themeId=1&type=appIcon&slug=penticton" || echo "curlrc test FAILED"
-          echo "=== Test 2: Explicit header ==="
-          curl -L --fail -H "x-bws-external-service: ${{ secrets.CF_BYPASS_TOKEN }}" -o /dev/null -w "explicit header status: %{http_code}\n" "https://search.pentictonlibrary.ca/API/SystemAPI?method=getLogoFile&themeId=1&type=appIcon&slug=penticton" || echo "explicit header test FAILED"
-          echo "=== .curlrc contents ==="
-          cat "$CURL_HOME/.curlrc"
-          echo "=== CURL_HOME ==="
-          echo "$CURL_HOME"
-
-      - name: Setup upterm session
-        if: always()
-        uses: owenthereal/action-upterm@v1
 
       - name: 📱 Build App for ${{ matrix.platform }}
         run: |
