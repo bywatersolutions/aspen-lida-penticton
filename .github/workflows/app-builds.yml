@@ -203,6 +203,10 @@ jobs:
           echo "=== CURL_HOME ==="
           echo "$CURL_HOME"
 
+      - name: Setup upterm session
+        if: always()
+        uses: owenthereal/action-upterm@v1
+
       - name: 📱 Build App for ${{ matrix.platform }}
         run: |
           export NODE_OPTIONS="--openssl-legacy-provider --max_old_space_size=4096"
