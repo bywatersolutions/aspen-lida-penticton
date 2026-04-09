@@ -105,6 +105,11 @@ jobs:
       - name: Get origiating IP
         run: curl ipinfo.io
 
+      - name: Debug CF token
+        run: 'echo "Token starts with: ${CF_BYPASS_TOKEN:0:4} length: ${#CF_BYPASS_TOKEN}"'
+        env:
+          CF_BYPASS_TOKEN: ${{ secrets.CF_BYPASS_TOKEN }}
+
       - name: 🏗  Checkout repository
         uses: actions/checkout@v4
         with:
