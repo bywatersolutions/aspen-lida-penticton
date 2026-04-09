@@ -102,9 +102,6 @@ jobs:
         platform: [android, ios]
     runs-on: ${{ matrix.platform == 'ios' && 'macos-26' || 'ubuntu-latest' }}
     steps:
-      - name: Get origiating IP
-        run: curl ipinfo.io
-
       - name: 🏗  Checkout repository
         uses: actions/checkout@v4
         with:
