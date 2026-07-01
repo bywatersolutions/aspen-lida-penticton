@@ -87,7 +87,7 @@ export async function fetchNearbyLibrariesFromGreenhouse() {
      });
 
      if (response.ok) {
-          const data = response.data.result;
+          const data = response.data;
 
           let libraries = GLOBALS.slug.includes('aspen-lida') && GLOBALS.slug !== 'aspen-lida-bws' ? data.libraries : Object.values(data.library ?? {});
           libraries = [...(libraries ?? [])].sort((a, b) => {
